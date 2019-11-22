@@ -1,0 +1,57 @@
+---
+
+- include_tasks: install_tomcat.yml
+
+- name: create application directory
+  file:
+    path: "{{ jolokia_home }}/current/webapps/jolokia"
+    state: directory
+    owner: "{{ jolokia_user }}"
+    group: "{{ jolokia_group }}"
+    mode: 0750
+
+- name: download jolokia jar to local folder
+  become: false
+  get_url:
+    url: "{{ jolokia_download_url }}"
+    dest: "{{ local_tmp_directory }}/{{ jolokia_file_name }}"
+  register: _download_archive
+  until: _download_archive is succeeded
+  retries: 5
+  delay: 2
+  # run_once: true
+  delegate_to: localhost
+  check_mode: false
+  tags:
+    - jolokia
+
+- name: deploy application archiv
+  copy:
+    src: "{{ local_tmp_directory }}/{{ jolokia_file_name }}"
+    dest: "{{ deployment_tmp_directory }}"
+    checksum: "{{ artefact_checksum }}"
+
+- name: unpack archive
+  unarchive:
+    src: "{{ deployment_tmp_directory }}/{{ jolokia_file_name }}"
+    dest: "{{ jolokia_home }}/current/webapps/jolokia"
+    owner: "{{ jolokia_user }}"
+    group: "{{ jolokia_group }}"
+    mode: 0750
+    copy: false
+
+# - name: get system timestamp  # noqa 305
+#   shell: 'date +"%Y-%m-%d %H-%M-%S %Z"'
+#   register: timestamp
+#   no_log: true
+#   tags:
+#     - skip_ansible_lint
+#
+#
+# - name: propagate jolokia jar
+#   copy:
+#     src: "{{ local_tmp_directory }}/jolokia-agent.jar"
+#     dest: "{{ deployment_tmp_directory }}"
+#   tags:
+#     - jolokia
+#

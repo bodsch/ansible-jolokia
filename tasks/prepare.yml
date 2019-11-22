@@ -1,0 +1,43 @@
+---
+
+- name: create ansible local facts directory
+  file:
+    dest: /etc/ansible/facts.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: create jolokia group
+  group:
+    name: "{{ jolokia_group }}"
+    state: present
+
+- name: create jolokia user
+  user:
+    name: "{{ jolokia_user }}"
+    group: "{{ jolokia_group }}"
+    shell: /sbin/nologin
+    createhome: true
+    comment: jolokia user
+    home: "{{ jolokia_home }}"
+
+- name: create coremedia home directory
+  file:
+    path: "{{ jolokia_home }}"
+    state: directory
+    owner: "{{ jolokia_user }}"
+    group: "{{ jolokia_group }}"
+    mode: 0750
+
+- name: create local temporary path
+  become: false
+  file:
+    path: "{{ local_tmp_directory }}"
+    state: directory
+  delegate_to: localhost
+
+- name: create temporary path for deployment artefacts
+  file:
+    path: "{{ deployment_tmp_directory }}"
+    state: directory

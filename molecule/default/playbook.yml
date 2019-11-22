@@ -1,0 +1,8 @@
+---
+- hosts: all
+  any_errors_fatal: false
+  environment:
+    NETRC: ''
+  roles:
+    - role: tomcat
+    - role: ansible-jolokia

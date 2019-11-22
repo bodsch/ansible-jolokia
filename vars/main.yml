@@ -1,0 +1,4 @@
+---
+
+deployment_tmp_directory: /tmp/deployment_artefacts
+local_tmp_directory: /tmp/ansible_artefacts
