@@ -4,5 +4,4 @@
   environment:
     NETRC: ''
   roles:
-    - role: tomcat
     - role: ansible-jolokia

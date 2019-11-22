@@ -1,5 +1,41 @@
 ---
 
+- name: create deployment temporary directory
+  file:
+    path: "{{ deployment_tmp_directory }}"
+    state: directory
+    mode: 0750
+
+- name: create local temporary directory
+  become: false
+  file:
+    path: "{{ local_tmp_directory }}"
+    state: directory
+    mode: 0750
+  delegate_to: localhost
+
+- name: download tomcat binary to local folder
+  become: false
+  get_url:
+    url: "{{ tomcat_download_url }}"
+    dest: "{{ local_tmp_directory }}/apache-tomcat-{{ tomcat_version }}.tar.gz"
+  register: _download_archive
+  until: _download_archive is succeeded
+  retries: 5
+  delay: 2
+  # run_once: true
+  delegate_to: localhost
+  check_mode: false
+  tags:
+    - tomcat
+
+- name: propagate tomcat archiv
+  copy:
+    src: "{{ local_tmp_directory }}/apache-tomcat-{{ tomcat_version }}.tar.gz"
+    dest: "{{ deployment_tmp_directory }}"
+  tags:
+    - tomcat
+
 - name: check for unpacked tomcat
   stat:
     path: "{{ jolokia_home }}/apache-tomcat-{{ tomcat_version }}"
@@ -7,7 +43,7 @@
 
 - name: check for deployed application
   stat:
-    path: "{{ jolokia_home }}/current/webapps/{{ coremedia_application_name }}/META-INF/MANIFEST.MF"
+    path: "{{ jolokia_home }}/current/webapps/jolokia/META-INF/MANIFEST.MF"
   register: _deployed_application
 
 - block:

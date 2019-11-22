@@ -1,0 +1,19 @@
+[Unit]
+Description=jolokia
+After=syslog.target network.target
+
+[Service]
+Type=forking
+PIDFile={{ jolokia_home }}/jolokia.pid
+
+Environment=CATALINA_PID={{ jolokia_home }}/jolokia.pid
+Environment=CATALINA_HOME={{ jolokia_home }}/current
+
+ExecStart={{ jolokia_home }}/current/bin/startup.sh -Dprocessname=jolokia
+ExecStop={{ jolokia_home }}/current/bin/shutdown.sh 30
+
+User={{ jolokia_user }}
+Group={{ jolokia_group }}
+
+[Install]
+WantedBy=multi-user.target

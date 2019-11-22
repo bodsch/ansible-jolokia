@@ -1,0 +1,133 @@
+#!/bin/bash
+#
+# Init file for {{ coremedia_application_name }}
+#
+# chkconfig: 2345 81 19
+# description: {{ coremedia_application_name }}
+# processname: {{ coremedia_application_name }}
+# pidfile: {{ cae_live.user_home }}/{{ coremedia_application_name }}/apache-tomcat.pid
+
+
+CATALINA_HOME={{ cae_live.user_home }}/{{ coremedia_application_name }}/current
+CATALINA_PID={{ cae_live.user_home }}/{{ coremedia_application_name }}/apache-tomcat.pid
+
+RES_COL=60
+MOVE_TO_COL="echo -en \\033[${RES_COL}G"
+SETCOLOR_SUCCESS="echo -en \\033[1;32m"
+SETCOLOR_FAILURE="echo -en \\033[1;31m"
+SETCOLOR_WARNING="echo -en \\033[1;33m"
+SETCOLOR_NORMAL="echo -en \\033[0;39m"
+
+if [ -f /etc/init.d/functions ]; then
+. /etc/init.d/functions
+fi
+
+# Read config
+export CATALINA_HOME CATALINA_PID
+test -x $CATALINA_HOME || { echo "TOMCAT providing CATALINA_HOME not installed at $CATALINA_HOME";
+if [ "$1" = "stop" ]; then exit 0;
+else exit 5; fi; }
+
+RETVAL=0
+
+printStatus(){
+  $MOVE_TO_COL
+  echo -n "["
+  if test $1 == 0; then
+    $SETCOLOR_SUCCESS && echo -n $"  OK  "
+  else
+    $SETCOLOR_FAILURE && echo -n $"FAILED"
+  fi
+  $SETCOLOR_NORMAL
+  echo -n "]"
+  echo
+}
+
+start(){
+  for hook_script in {{ cae_live.user_home }}/{{ coremedia_application_name }}/service-hooks/pre-start*.sh; do
+    if [ -f ${hook_script} ]; then
+      source $hook_script;
+    fi
+  done
+  echo "Starting {{ coremedia_application_name }}"
+  su {{ coremedia_application_name }} -s /bin/sh -p -c '$CATALINA_HOME/bin/startup.sh -Dprocessname={{ coremedia_application_name }}'
+  RETVAL=$?
+  printStatus $RETVAL
+  [ $RETVAL = 0 ] && touch /var/lock/subsys/{{ coremedia_application_name }}
+  for hook_script in {{ cae_live.user_home }}/{{ coremedia_application_name }}/service-hooks/post-start*.sh; do
+    if [ -f ${hook_script} ]; then
+      source $hook_script;
+    fi
+  done
+}
+
+stop(){
+  for hook_script in {{ cae_live.user_home }}/{{ coremedia_application_name }}/service-hooks/pre-stop*.sh; do
+    if [ -f ${hook_script} ]; then
+      source $hook_script;
+    fi
+  done
+  echo "Stopping {{ coremedia_application_name }}"
+  su {{ coremedia_application_name }} -s /bin/sh -p -c '$CATALINA_HOME/bin/shutdown.sh 30 '
+  RETVAL=$?
+  printStatus $RETVAL
+  [ $RETVAL = 0 ] && rm -f /var/lock/subsys/{{ coremedia_application_name }}
+  for hook_script in {{ cae_live.user_home }}/{{ coremedia_application_name }}/service-hooks/post-stop*.sh; do
+    if [ -f ${hook_script} ]; then
+      source $hook_script;
+    fi
+  done
+}
+
+status(){
+  if [ ! -z "$CATALINA_PID" ]; then
+    if [ -f "$CATALINA_PID" ]; then
+      if [ -s "$CATALINA_PID" ]; then
+        kill -0 `cat "$CATALINA_PID" 2>/dev/null` >/dev/null 2>&1
+        if [ $? -gt 0 ]; then
+          echo -n "Tomcat {{ coremedia_application_name }} pid file exist but no process with id $(cat $CATALINA_PID) is running" && printStatus 1
+          echo
+          exit 1
+        else
+          echo -n "Tomcat {{ coremedia_application_name }} is running with pid: $(cat $CATALINA_PID)" && printStatus 0
+          echo
+          exit 0
+        fi
+      else
+        echo -n "Tomcat {{ coremedia_application_name }} pid file exist but file is empty." && printStatus 1
+        echo
+        exit 4
+      fi
+    else
+      echo -n "Tomcat {{ coremedia_application_name }} is stopped, no PID file found." && printStatus 1
+      echo
+      exit 3
+    fi
+  fi
+}
+
+case "$1" in
+start)
+  start
+;;
+restart)
+  stop
+  start
+;;
+reload)
+  stop
+  start
+;;
+stop)
+  stop
+;;
+status)
+  status
+;;
+*)
+echo "Usage: $0 {start|stop|restart|status|reload}"
+exit 1
+;;
+esac
+
+exit $RETVAL

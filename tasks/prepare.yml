@@ -1,5 +1,12 @@
 ---
 
+- name: install requirements
+  package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - unzip
+
 - name: create ansible local facts directory
   file:
     dest: /etc/ansible/facts.d
@@ -26,6 +33,18 @@
   file:
     path: "{{ jolokia_home }}"
     state: directory
+    owner: "{{ jolokia_user }}"
+    group: "{{ jolokia_group }}"
+    mode: 0750
+
+
+- name: create application logging directory
+  file:
+    src: "{{ jolokia_home }}/current/logs"
+    dest: "/var/log/jolokia"
+    state: link
+    force: true
+    follow: false
     owner: "{{ jolokia_user }}"
     group: "{{ jolokia_group }}"
     mode: 0750

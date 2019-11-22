@@ -1,1 +1,7 @@
 ---
+
+- name: ensure jolokia is started
+  service:
+    name: jolokia
+    state: started
+    enabled: true

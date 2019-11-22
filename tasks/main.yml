@@ -23,7 +23,7 @@
     - install
 
 - name: configure
-  import_tasks: config.yml
+  import_tasks: configure.yml
   tags:
     - jolokia
     - configure

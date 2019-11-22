@@ -29,12 +29,12 @@
   copy:
     src: "{{ local_tmp_directory }}/{{ jolokia_file_name }}"
     dest: "{{ deployment_tmp_directory }}"
-    checksum: "{{ artefact_checksum }}"
 
 - name: unpack archive
   unarchive:
+    # src: "{{ local_tmp_directory }}/{{ jolokia_file_name }}"
     src: "{{ deployment_tmp_directory }}/{{ jolokia_file_name }}"
-    dest: "{{ jolokia_home }}/current/webapps/jolokia"
+    dest: "{{ jolokia_home }}/current/webapps/jolokia/"
     owner: "{{ jolokia_user }}"
     group: "{{ jolokia_group }}"
     mode: 0750
@@ -55,3 +55,11 @@
 #   tags:
 #     - jolokia
 #
+
+- name: create systemd service unit
+  template:
+    src: "init/systemd/jolokia.service.j2"
+    dest: "{{ systemd_lib_directory }}/jolokia.service"
+    owner: root
+    group: root
+    mode: 0644
