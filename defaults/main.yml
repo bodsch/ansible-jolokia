@@ -7,6 +7,15 @@ tomcat_major_version: "{{ tomcat_version.split('.')[0] }}"
 # https://archive.apache.org/dist/tomcat/tomcat-9/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz
 tomcat_download_url: "https://archive.apache.org/dist/tomcat/tomcat-{{ tomcat_major_version }}/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
 
+jolokia_tomcat_roles:
+  - jolokia
+#  - admin
+jolokia_tomcat_users:
+  - username: monitoring
+    password: monitoring
+    roles:
+      - jolokia
+
 jolokia_version: 1.6.2
 jolokia_file_name: "jolokia-war-{{ jolokia_version }}.war"
 jolokia_download_url: "http://search.maven.org/remotecontent?filepath=org/jolokia/jolokia-war/{{ jolokia_version }}/{{ jolokia_file_name }}"
@@ -17,8 +26,12 @@ jolokia_home: /opt/jolokia
 jolokia_user: jolokia
 jolokia_group: jolokia
 
-jolokia_port: 8778
-jolokia_bind_ip: 127.0.0.1
+# jolokia_tomcat_http_port: 8080
+# jolokia_tomcat_http_bind: 127.0.0.1
+# jolokia_tomcat_ajp_port: 8099
+# jolokia_tomcat_ajp_bind: 127.0.0.1
 
-jolokia_catalina_xmx: 128m
-jolokia_catalina_xms: 128m
+jolokia_tomcat_initial_heap_size: 64m
+jolokia_tomcat_max_heap_size: 128m
+
+jolokia_debug: false

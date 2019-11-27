@@ -1,57 +1,48 @@
 #!/usr/bin/env bash
-
+#
+# https://www.sderosiaux.com/articles/2016/01/10/java-cli-gc-memory-and-tools-overview/
+#
 JAVA_HOME=/usr/java/default
 export JAVA_HOME
 
-# CATALINA_OPTS="$CATALINA_OPTS -Xmx{{ jolokia_catalina_xmx }}"
-# CATALINA_OPTS="$CATALINA_OPTS -Xss{{ jolokia_catalina_xss | default( '256k') }}"
+# Heap Tuning Parameters
+# You can control the heap size with the following JVM parameters:
 #
-# ## tell Tomcat to release the BodyContent buffer when BodyContentImpl.clear() is called.
-# CATALINA_OPTS="$CATALINA_OPTS -Dorg.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER=true"
 #
-# CATALINA_OPTS="$CATALINA_OPTS -XX:+CMSClassUnloadingEnabled"
-#
-# ## successful name lookups from the name service should not be cached
-# CATALINA_OPTS="$CATALINA_OPTS -Dsun.net.inetaddr.ttl=0"
-#
-# CATALINA_OPTS="$CATALINA_OPTS -Djava.security.egd=file:/dev/./urandom"
-#
-# CATALINA_OPTS="$CATALINA_OPTS -XX:+UseConcMarkSweepGC"
-# CATALINA_OPTS="$CATALINA_OPTS -XX:+UseParNewGC"
-# CATALINA_OPTS="$CATALINA_OPTS -XX:+CMSClassUnloadingEnabled"
-# CATALINA_OPTS="$CATALINA_OPTS -XX:+UseMembar"
-# CATALINA_OPTS="$CATALINA_OPTS -XX:OnOutOfMemoryError='kill -9 %p'"
-#
-# CATALINA_OPTS="$CATALINA_OPTS -Djava.net.preferIPv4Stack=true"
-# CATALINA_OPTS="$CATALINA_OPTS -Djava.net.preferIPv4Addresses"
-# ## CATALINA_OPTS="$CATALINA_OPTS -Dlogging.config=file://{{ jolokia_home }}/logback.xml "
-# CATALINA_OPTS="$CATALINA_OPTS -Dlog.dir=/var/log/jolokia"
-#
-# CATALINA_OPTS="$CATALINA_OPTS -Djava.rmi.server.hostname={{ ansible_fqdn }}"
-# CATALINA_OPTS="$CATALINA_OPTS -Dcom.sun.management.jmxremote"
-# CATALINA_OPTS="$CATALINA_OPTS -Dcom.sun.management.jmxremote.authenticate=false"
-# CATALINA_OPTS="$CATALINA_OPTS -Dcom.sun.management.jmxremote.ssl=false"
-# CATALINA_OPTS="$CATALINA_OPTS -Dcom.sun.management.jmxremote.password.file=$CATALINA_HOME/../jmxremote.password"
-# CATALINA_OPTS="$CATALINA_OPTS -Dcom.sun.management.jmxremote.access.file=$CATALINA_HOME/../jmxremote.access"
-#
+# -Xmsvalue                          # minimum heap size
+# -Xmxvalue                          # maximum heap size
+# -XX:MinHeapFreeRatio=minimum       #
+# -XX:MaxHeapFreeRatio=maximum       #
+# -XX:NewRatio=ratio                 #
+# -XX:NewSize=size                   # control the new generation’s minimum size
+# -XX:MaxNewSize=size                # control the new generation’s maximum size
+# -XX:+AggressiveHeap                #
+# -XX:+PrintTenuringDistribution     #
 
-CATALINA_OPTS="${CATALINA_OPTS} -Xms{{ jolokia_catalina_xms }}"
-CATALINA_OPTS="${CATALINA_OPTS} -Xmx{{ jolokia_catalina_xmx }}"
-CATALINA_OPTS="${CATALINA_OPTS} -XX:NewSize=128m"
-CATALINA_OPTS="${CATALINA_OPTS} -XX:MaxNewSize=128m"
-#CATALINA_OPTS="${CATALINA_OPTS} -XX:PermSize=256m"
-#CATALINA_OPTS="${CATALINA_OPTS} -XX:MaxPermSize=256m"
+CATALINA_OPTS="${CATALINA_OPTS} -XX:InitialHeapSize={{ jolokia_tomcat_initial_heap_size }}"
+CATALINA_OPTS="${CATALINA_OPTS} -XX:MaxHeapSize={{ jolokia_tomcat_max_heap_size }}"
+CATALINA_OPTS="${CATALINA_OPTS} -XX:NewSize=32m"
+CATALINA_OPTS="${CATALINA_OPTS} -XX:MaxNewSize=64m"
+# CATALINA_OPTS="${CATALINA_OPTS} -XX:MaxMetaSpaceSize=12m"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:+DisableExplicitGC"
+# CATALINA_OPTS="${CATALINA_OPTS} -XX:+PrintGC"
+# CATALINA_OPTS="${CATALINA_OPTS} -XX:+PrintGCDetails"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:HeapDumpPath=/var/logs/jolokia"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:+HeapDumpOnOutOfMemoryError"
+CATALINA_OPTS="${CATALINA_OPTS} -XX:OnOutOfMemoryError='kill -9 %p'"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:+UseConcMarkSweepGC"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:+UseParNewGC"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:SurvivorRatio=8"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:+UseCompressedOops"
 CATALINA_OPTS="${CATALINA_OPTS} -Dserver.name={{ ansible_fqdn }}"
+CATALINA_OPTS="${CATALINA_OPTS} -Djava.net.preferIPv4Stack=true"
+CATALINA_OPTS="${CATALINA_OPTS} -Djava.net.preferIPv4Addresses"
+CATALINA_OPTS="${CATALINA_OPTS} -Djava.security.egd=file:/dev/./urandom"
 CATALINA_OPTS="${CATALINA_OPTS} -Dcom.sun.management.jmxremote.port=22222"
 CATALINA_OPTS="${CATALINA_OPTS} -Dcom.sun.management.jmxremote.authenticate=false"
 CATALINA_OPTS="${CATALINA_OPTS} -Dcom.sun.management.jmxremote.ssl=false"
+CATALINA_OPTS="${CATALINA_OPTS} -Dsun.net.inetaddr.ttl=15"
+CATALINA_OPTS="${CATALINA_OPTS} -Dsun.rmi.dgc.client.gcInterval=3600000"
 CATALINA_OPTS="${CATALINA_OPTS} -Dsun.rmi.transport.tcp.responseTimeout=30000"
 
 

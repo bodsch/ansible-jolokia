@@ -41,10 +41,6 @@
     path: "{{ jolokia_home }}/apache-tomcat-{{ tomcat_version }}"
   register: _tomcat_unpack
 
-- name: check for deployed application
-  stat:
-    path: "{{ jolokia_home }}/current/webapps/jolokia/META-INF/MANIFEST.MF"
-  register: _deployed_application
 
 - block:
 

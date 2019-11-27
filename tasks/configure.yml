@@ -8,13 +8,35 @@
     group: "{{ jolokia_group }}"
     mode: 0750
 
-- name: create custom web.xml
+- name: configure tomcat - web.xml
   template:
     src: WEB-INF/web.xml.j2
     dest: "{{ jolokia_home }}/current/webapps/jolokia/WEB-INF/web.xml"
     owner: "{{ jolokia_user }}"
     group: "{{ jolokia_group }}"
-    mode: 0750
+    mode: 0640
+  notify:
+    - restart jolokia
+
+- name: configure tomcat - server.xml
+  template:
+    src: conf/server.xml.j2
+    dest: "{{ jolokia_home }}/current/conf/server.xml"
+    owner: "{{ jolokia_user }}"
+    group: "{{ jolokia_group }}"
+    mode: 0640
+  notify:
+    - restart jolokia
+
+- name: configure tomcat - tomcat-users.xml
+  template:
+    src: conf/tomcat-users.xml.j2
+    dest: "{{ jolokia_home }}/current/conf/tomcat-users.xml"
+    owner: "{{ jolokia_user }}"
+    group: "{{ jolokia_group }}"
+    mode: 0640
+  notify:
+    - restart jolokia
 
 - name: fix permissions for application home directory  # noqa 301
   command: "{{ item }}"
