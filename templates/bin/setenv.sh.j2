@@ -2,7 +2,7 @@
 #
 # https://www.sderosiaux.com/articles/2016/01/10/java-cli-gc-memory-and-tools-overview/
 #
-JAVA_HOME=/usr/java/default
+JAVA_HOME={{ java_home }}
 export JAVA_HOME
 
 # Heap Tuning Parameters
@@ -31,7 +31,8 @@ CATALINA_OPTS="${CATALINA_OPTS} -XX:HeapDumpPath=/var/logs/jolokia"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:+HeapDumpOnOutOfMemoryError"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:OnOutOfMemoryError='kill -9 %p'"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:+UseConcMarkSweepGC"
-CATALINA_OPTS="${CATALINA_OPTS} -XX:+UseParNewGC"
+# not longer needed for Java 11
+# CATALINA_OPTS="${CATALINA_OPTS} -XX:+UseParNewGC"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:SurvivorRatio=8"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:+UseCompressedOops"
 CATALINA_OPTS="${CATALINA_OPTS} -Dserver.name={{ ansible_fqdn }}"
@@ -44,6 +45,5 @@ CATALINA_OPTS="${CATALINA_OPTS} -Dcom.sun.management.jmxremote.ssl=false"
 CATALINA_OPTS="${CATALINA_OPTS} -Dsun.net.inetaddr.ttl=15"
 CATALINA_OPTS="${CATALINA_OPTS} -Dsun.rmi.dgc.client.gcInterval=3600000"
 CATALINA_OPTS="${CATALINA_OPTS} -Dsun.rmi.transport.tcp.responseTimeout=30000"
-
 
 export CATALINA_OPTS
