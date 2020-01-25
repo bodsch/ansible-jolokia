@@ -1,7 +1,6 @@
 ---
 
 dependencies:
-  - coretto
   - tomcat
 
 galaxy_info:
