@@ -2,21 +2,10 @@
 <!-- {{ ansible_managed }} -->
 
 <Server port="{{ jolokia_tomcat_shutdown_port | default('8005') }}" shutdown="SHUTDOWN">
-<!--  <Listener className="org.apache.catalina.startup.VersionLoggerListener" /> -->
-<!--  <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" /> -->
   <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
   <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" />
   <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener" />
 
-<!--
-  <GlobalNamingResources>
-    <Resource name="UserDatabase" auth="Container"
-              type="org.apache.catalina.UserDatabase"
-              description="User database that can be updated and saved"
-              factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
-              pathname="conf/tomcat-users.xml" />
-  </GlobalNamingResources>
--->
   <Service name="Catalina">
 
     <Executor name="tomcatThreadPool"
@@ -30,7 +19,7 @@
                protocol="HTTP/1.1"
                connectionTimeout="20000"
                URIEncoding="UTF-8"
-               bindOnInit="false"/>
+               bindOnInit="false" />
 <!--
     <Connector executor="tomcatThreadPool"
                port="{{ jolokia_tomcat_ajp_port | default('8099') }}"
@@ -39,17 +28,13 @@
                URIEncoding="UTF-8"/>
 -->
     <Engine name="Catalina" defaultHost="localhost">
-<!--
-      <Realm className="org.apache.catalina.realm.LockOutRealm">
-        <Realm className="org.apache.catalina.realm.UserDatabaseRealm" resourceName="UserDatabase"/>
-      </Realm>
--->
+
       <Host name="localhost" appBase="webapps" unpackWARs="false" autoDeploy="false">
 
         <Valve className="org.apache.catalina.valves.AccessLogValve"
                directory="logs"
-               prefix="localhost_access_log"
-               suffix=".txt"
+               prefix="localhost_access"
+               suffix=".log"
                pattern="%h %l %u %t &quot;%r&quot; %s %b"
                resolveHosts="false" />
 

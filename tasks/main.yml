@@ -1,15 +1,5 @@
 ---
 
-- name: Include OS-specific variables.
-  include_vars:
-    file: "{{ item }}"
-  with_first_found:
-    - "{{ ansible_distribution | lower }}.{{ ansible_lsb.codename | lower }}.yml"
-    - "{{ ansible_distribution | lower }}.{{ ansible_lsb.major_release }}.yml"
-    - "{{ ansible_distribution | lower }}.yml"
-    - "{{ ansible_os_family | lower }}.yml"
-    - "default.yml"
-
 - name: prepare
   import_tasks: prepare.yml
   tags:

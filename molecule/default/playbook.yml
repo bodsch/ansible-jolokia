@@ -3,5 +3,14 @@
   any_errors_fatal: false
   environment:
     NETRC: ''
+  vars:
+    artefact_server: "{{ lookup('env', 'ARTEFACT_SERVER') | default('http://127.0.0.1', true) }}"
+    application_version: "{{ lookup('env', 'APPLICATION_VERSION') | default('1910.1', true ) }}"
+    tomcat_artefact_url: "{{ artefact_url }}"
+    artefact_url: "{{ artefact_server }}/{{ application_version }}"
+
+    tomcat_version: 9.0.8
+    tomcat_files: {}
   roles:
+    - role: corretto
     - role: ansible-jolokia

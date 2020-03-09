@@ -1,19 +1,25 @@
+
 [Unit]
-Description=jolokia
-After=syslog.target network.target
+Description = jolokia
+After = syslog.target network.target
 
 [Service]
-Type=forking
-PIDFile={{ jolokia_home }}/jolokia.pid
+#Type = forking
+Type = simple
+PIDFile = {{ jolokia_home }}/jolokia.pid
 
-Environment=CATALINA_PID={{ jolokia_home }}/jolokia.pid
-Environment=CATALINA_HOME={{ jolokia_home }}/current
+User  = {{ jolokia_user }}
+Group = {{ jolokia_group }}
 
-ExecStart={{ jolokia_home }}/current/bin/startup.sh -Dprocessname=jolokia
-ExecStop={{ jolokia_home }}/current/bin/shutdown.sh 30
+Environment = CATALINA_PID={{ jolokia_home }}/jolokia.pid
+Environment = CATALINA_HOME={{ jolokia_home }}/current
 
-User={{ jolokia_user }}
-Group={{ jolokia_group }}
+RuntimeDirectory = jolokia
+RuntimeDirectoryMode = 0775
+
+ExecStart = {{ jolokia_home }}/current/bin/startup.sh -Dprocessname=jolokia
+ExecStop  = {{ jolokia_home }}/current/bin/shutdown.sh 30
+TimeoutStartSec = 600
 
 [Install]
-WantedBy=multi-user.target
+WantedBy = multi-user.target

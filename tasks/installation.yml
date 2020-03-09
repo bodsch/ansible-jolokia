@@ -17,7 +17,7 @@
         group: "{{ jolokia_group }}"
         mode: 0750
 
-    - name: download jolokia jar to local folder
+    - name: download jolokia application to local folder
       become: false
       get_url:
         url: "{{ jolokia_download_url }}"
@@ -26,7 +26,6 @@
       until: _download_archive is succeeded
       retries: 5
       delay: 2
-      # run_once: true
       delegate_to: localhost
       check_mode: false
       tags:
@@ -39,7 +38,6 @@
 
     - name: unpack archive
       unarchive:
-        # src: "{{ local_tmp_directory }}/{{ jolokia_file_name }}"
         src: "{{ deployment_tmp_directory }}/{{ jolokia_file_name }}"
         dest: "{{ jolokia_home }}/current/webapps/jolokia/"
         owner: "{{ jolokia_user }}"

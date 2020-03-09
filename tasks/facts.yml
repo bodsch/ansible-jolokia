@@ -1,0 +1,32 @@
+---
+
+- block:
+
+    - name: get system timestamp  # noqa 305
+      shell: 'date +"%Y-%m-%d %H-%M-%S %Z"'
+      register: timestamp
+      no_log: true
+      tags:
+        - skip_ansible_lint
+
+    - name: set facts
+      set_fact:
+        current_date: "{{ timestamp.stdout[0:10] }}"
+        current_time: "{{ timestamp.stdout[11:] }}"
+        current_timestamp: "{{ timestamp.stdout }}"
+        application_checksum: "{{ artifact_stats.stat.checksum }}"
+        application_version: "{{ application_version }}"
+      no_log: true
+
+    - name: create custom fact file
+      template:
+        src: application.fact.j2
+        dest: "/etc/ansible/facts.d/{{ caefeeder }}.fact"
+        owner: 'root'
+        group: 'root'
+        mode: '0750'
+
+    - name: do facts module to get latest information
+      setup:
+
+  when: artefact_download_needed | bool or not deployed_application | bool
