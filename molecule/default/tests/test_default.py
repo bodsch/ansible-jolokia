@@ -10,6 +10,7 @@ import json
 from pyjolokia import Jolokia, JolokiaError
 from errno import ECONNREFUSED
 
+# import testinfra
 import testinfra.utils.ansible_runner
 
 testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
@@ -20,7 +21,6 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 def AnsibleDefaults():
     with open("../../defaults/main.yml", 'r') as stream:
         return yaml.load(stream)
-
 
 @pytest.mark.parametrize("dirs", [
     "/etc/ansible/facts.d",
@@ -76,10 +76,15 @@ def test_open_port(host, ports):
 
 # def test_request(host):
 #
-#     # v = host.ansible.get_variables()
+#     v = host.ansible.get_variables()
 #
-#     jolokia_url = "http://172.17.0.3:8080/jolokia/"
-#     jolokia_target = "service:jmx:rmi:///jndi/rmi://172.17.0.3:%d/jmxrmi" % 22222
+#     hostname = v.get('inventory_hostname')
+#     print(testinfra.get_host("ansible://{}".format(hostname)))
+#
+#     jolokia_url = "http://{}:8080/jolokia/".format(hostname)
+#     jolokia_target = "service:jmx:rmi:///jndi/rmi://{}:{}/jmxrmi".format('localhost', 22222)
+#
+#     print(jolokia_url)
 #
 #     j4p = Jolokia( jolokia_url )
 #     # j4p.auth(httpusername='jolokia', httppassword='jolokia')
@@ -117,16 +122,17 @@ def test_open_port(host, ports):
 #
 #     response = j4p.getRequests()
 #
-#     print(json.dumps( response, indent = 2 ))
+#     # print(json.dumps( response, indent = 2 ))
 #
 #     for v in response:
 #
 #         status = v.get("status")
-#
-#         assert int(status) == 200
+#         # print(status)
+#         assert int(status) == 201
 #
 #     # html = host.run("curl http://localhost:80/jolokia/").stdout_bytes
 #     #
 #     # print(json.dumps( html, indent = 2 ))
 #     #
 #     # assert False
+#

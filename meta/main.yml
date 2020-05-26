@@ -1,7 +1,8 @@
 ---
 
 dependencies:
-  - tomcat
+  - role: tomcat
+    version: 2.1.0
 
 galaxy_info:
   author: bodsch

@@ -7,6 +7,8 @@
 # # https://archive.apache.org/dist/tomcat/tomcat-9/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz
 # tomcat_download_url: "https://archive.apache.org/dist/tomcat/tomcat-{{ tomcat_major_version }}/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
 
+jolokia_java_home: ''
+
 jolokia_tomcat_roles:
   - jolokia
 #  - admin
@@ -33,5 +35,28 @@ jolokia_group: jolokia
 
 jolokia_tomcat_initial_heap_size: 64m
 jolokia_tomcat_max_heap_size: 128m
+
+jolokia_catalina_opts:
+  - -XX:InitialHeapSize={{ jolokia_tomcat_initial_heap_size }}
+  - -XX:MaxHeapSize={{ jolokia_tomcat_max_heap_size }}
+  - -XX:NewSize=32m
+  - -XX:MaxNewSize=64m
+  - -XX:+DisableExplicitGC
+  - -XX:HeapDumpPath={{ jolokia_home }}/current/logs
+  - -XX:+HeapDumpOnOutOfMemoryError
+  - -XX:OnOutOfMemoryError='kill -9 %p'
+  - -XX:+UseConcMarkSweepGC
+  - -XX:SurvivorRatio=8
+  - -XX:+UseCompressedOops
+  - -Dserver.name={{ ansible_fqdn }}
+  - -Djava.net.preferIPv4Stack=true
+  - -Djava.net.preferIPv4Addresses
+  - -Djava.security.egd=file:/dev/./urandom
+  - -Dcom.sun.management.jmxremote.port=22222
+  - -Dcom.sun.management.jmxremote.authenticate=false
+  - -Dcom.sun.management.jmxremote.ssl=false
+  - -Dsun.net.inetaddr.ttl=15
+  - -Dsun.rmi.dgc.client.gcInterval=3600000
+  - -Dsun.rmi.transport.tcp.responseTimeout=30000
 
 jolokia_debug: false

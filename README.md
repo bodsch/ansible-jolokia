@@ -1,5 +1,6 @@
 # ansible role for jolokia
 
+Ansible role to install an jolokia application into an tomcat
 
 ### tests
 

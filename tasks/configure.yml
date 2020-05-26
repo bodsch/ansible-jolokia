@@ -1,19 +1,5 @@
 ---
 
-- name: detect JAVA_HOME
-  shell: |
-    dirname $(dirname $(readlink -f $(command -v javac)))
-  ignore_errors: true
-  register: __java_home
-  tags:
-    - java
-    - skip_ansible_lint
-
-- name: setting fact for JAVA_HOME
-  set_fact:
-    java_home: "{{ __java_home.stdout }}"
-  when: __java_home is defined
-
 - name: create setenv.sh
   template:
     src: bin/setenv.sh.j2
@@ -21,6 +7,8 @@
     owner: "{{ jolokia_user }}"
     group: "{{ jolokia_group }}"
     mode: 0750
+  notify:
+    - restart jolokia
 
 - name: configure tomcat - web.xml
   template:

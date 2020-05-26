@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
 #
 # https://www.sderosiaux.com/articles/2016/01/10/java-cli-gc-memory-and-tools-overview/
-#
-JAVA_HOME={{ java_home }}
+
+JAVA_HOME=$(java -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.home' | awk -F' = ' '{print $2}')
+
+if [ -z "${JAVA_HOME}" ]
+then
+  echo "no JAVA_HOME defined."
+  exit 1
+fi
+
 export JAVA_HOME
 
 # Heap Tuning Parameters
@@ -19,20 +26,20 @@ export JAVA_HOME
 # -XX:+AggressiveHeap                #
 # -XX:+PrintTenuringDistribution     #
 
+{% if jolokia_catalina_opts is defined and jolokia_catalina_opts | length != 0 %}
+{% for o in jolokia_catalina_opts %}
+CATALINA_OPTS="${CATALINA_OPTS} {{ o }}"
+{% endfor %}
+{% else %}
 CATALINA_OPTS="${CATALINA_OPTS} -XX:InitialHeapSize={{ jolokia_tomcat_initial_heap_size }}"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:MaxHeapSize={{ jolokia_tomcat_max_heap_size }}"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:NewSize=32m"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:MaxNewSize=64m"
-# CATALINA_OPTS="${CATALINA_OPTS} -XX:MaxMetaSpaceSize=12m"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:+DisableExplicitGC"
-# CATALINA_OPTS="${CATALINA_OPTS} -XX:+PrintGC"
-# CATALINA_OPTS="${CATALINA_OPTS} -XX:+PrintGCDetails"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:HeapDumpPath=/var/logs/jolokia"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:+HeapDumpOnOutOfMemoryError"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:OnOutOfMemoryError='kill -9 %p'"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:+UseConcMarkSweepGC"
-# not longer needed for Java 11
-# CATALINA_OPTS="${CATALINA_OPTS} -XX:+UseParNewGC"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:SurvivorRatio=8"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:+UseCompressedOops"
 CATALINA_OPTS="${CATALINA_OPTS} -Dserver.name={{ ansible_fqdn }}"
@@ -45,6 +52,6 @@ CATALINA_OPTS="${CATALINA_OPTS} -Dcom.sun.management.jmxremote.ssl=false"
 CATALINA_OPTS="${CATALINA_OPTS} -Dsun.net.inetaddr.ttl=15"
 CATALINA_OPTS="${CATALINA_OPTS} -Dsun.rmi.dgc.client.gcInterval=3600000"
 CATALINA_OPTS="${CATALINA_OPTS} -Dsun.rmi.transport.tcp.responseTimeout=30000"
-
+{% endif %}
 
 export CATALINA_OPTS

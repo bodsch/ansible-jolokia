@@ -2,7 +2,6 @@
 
 - include_tasks: install_tomcat.yml
 
-
 - name: check for deployed application
   stat:
     path: "{{ jolokia_home }}/current/webapps/jolokia/META-INF/MANIFEST.MF"
@@ -46,22 +45,6 @@
         copy: false
 
   when: _deployed_application.stat is defined and not _deployed_application.stat.exists
-
-# - name: get system timestamp  # noqa 305
-#   shell: 'date +"%Y-%m-%d %H-%M-%S %Z"'
-#   register: timestamp
-#   no_log: true
-#   tags:
-#     - skip_ansible_lint
-#
-#
-# - name: propagate jolokia jar
-#   copy:
-#     src: "{{ local_tmp_directory }}/jolokia-agent.jar"
-#     dest: "{{ deployment_tmp_directory }}"
-#   tags:
-#     - jolokia
-#
 
 - name: create systemd service unit
   template:
