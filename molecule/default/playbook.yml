@@ -4,10 +4,6 @@
   environment:
     NETRC: ''
   vars:
-    # artefact_server: "{{ lookup('env', 'ARTEFACT_SERVER') | default('http://127.0.0.1', true) }}"
-    # application_version: "{{ lookup('env', 'APPLICATION_VERSION') | default('1910.1', true ) }}"
-    # tomcat_artefact_url: "{{ artefact_url }}"
-    # artefact_url: "{{ artefact_server }}/{{ application_version }}"
 
     tomcat_version: 9.0.35
     tomcat_files: {}

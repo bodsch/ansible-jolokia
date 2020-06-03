@@ -59,19 +59,3 @@
   file:
     path: "{{ deployment_tmp_directory }}"
     state: directory
-
-# - name: detect installed java
-#   block:
-#
-#     - name: detect JAVA_HOME
-#       shell: |
-#         java -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.home' | awk -F' = ' '{print $2}'
-#       ignore_errors: true
-#       register: __java_home
-#
-#     - name: setting fact for JAVA_HOME
-#       set_fact:
-#         jolokia_java_home: "{{ __java_home.stdout }}"
-#       when: __java_home is defined and __java_home.stdout is defined
-#
-#   when: jolokia_java_home | string | length == 0

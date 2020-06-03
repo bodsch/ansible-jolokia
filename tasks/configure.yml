@@ -39,13 +39,3 @@
     mode: 0640
   notify:
     - restart jolokia
-
-# - name: fix permissions for application home directory  # noqa 301
-#   command: "{{ item }}"
-#   args:
-#     warn: false
-#   with_items:
-#     - chown -R {{ jolokia_user }}:{{ jolokia_group }} {{ jolokia_home }}
-#     - find {{ jolokia_home }} -maxdepth 5 -type d ! -perm 0750 -exec chmod 0750 {} \;
-#     - find {{ jolokia_home }} -maxdepth 5 -type f ! -perm 0640 -exec chmod 0640 {} \;
-#     - find {{ jolokia_home }} -maxdepth 5 -type f -name "*.sh" ! -perm 0750 -exec chmod 0750 {} \;

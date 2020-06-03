@@ -1,5 +1,9 @@
 ---
 
+- name: systemctl daemon-reload
+  systemd:
+    daemon_reload: true
+
 - name: restart jolokia
   service:
     name: jolokia
