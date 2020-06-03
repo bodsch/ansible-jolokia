@@ -45,10 +45,10 @@ jolokia_catalina_opts:
   - -XX:HeapDumpPath={{ jolokia_home }}/current/logs
   - -XX:+HeapDumpOnOutOfMemoryError
   - -XX:OnOutOfMemoryError='kill -9 %p'
-  - -XX:+UseConcMarkSweepGC
   - -XX:SurvivorRatio=8
   - -XX:+UseCompressedOops
   - -Dserver.name={{ ansible_fqdn }}
+  - -Dprocessname=jolokia
   - -Djava.net.preferIPv4Stack=true
   - -Djava.net.preferIPv4Addresses
   - -Djava.security.egd=file:/dev/./urandom
