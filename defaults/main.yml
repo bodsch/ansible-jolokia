@@ -71,6 +71,7 @@ jolokia_logrotate:
   options:
     - daily
     - rotate 2
+    - nodateext
     - missingok
     - notifempty
     - compress
