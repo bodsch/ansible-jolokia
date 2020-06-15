@@ -28,6 +28,9 @@ jolokia_home: /opt/jolokia
 jolokia_user: jolokia
 jolokia_group: jolokia
 
+jolokia_systemd_restart: 'on-failure'
+jolokia_systemd_restart_sleep: '20s'
+
 # jolokia_tomcat_http_port: 8080
 # jolokia_tomcat_http_bind: 127.0.0.1
 # jolokia_tomcat_ajp_port: 8099
@@ -60,3 +63,16 @@ jolokia_catalina_opts:
   - -Dsun.rmi.transport.tcp.responseTimeout=30000
 
 jolokia_debug: false
+
+jolokia_logrotate_enabled: true
+jolokia_logrotate:
+  paths:
+    - /var/log/jolokia/*.log
+  options:
+    - daily
+    - rotate 2
+    - missingok
+    - notifempty
+    - compress
+  scripts:
+    postrotate: systemctl restart jolokia > /dev/null

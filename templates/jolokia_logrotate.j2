@@ -1,0 +1,21 @@
+# {{ ansible_managed }}
+{% if jolokia_logrotate.path is defined %}
+{{ jolokia_logrotate.path }}
+{% elif jolokia_logrotate.paths is defined %}
+{{ jolokia_logrotate.paths | join( ' ' ) }}
+{
+  {% if jolokia_logrotate.options is defined -%}
+  {% for option in jolokia_logrotate.options -%}
+  {{ option }}
+  {% endfor -%}
+  {% endif %}
+  {%- if jolokia_logrotate.scripts is defined -%}
+  {%- for name, script in jolokia_logrotate.scripts.items() -%}
+  {{ name }}
+    {{ script }}
+  endscript
+  {%- endfor -%}
+  {% endif %}
+
+}
+{% endif %}

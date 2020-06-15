@@ -1,3 +1,4 @@
+{# https://www.freedesktop.org/software/systemd/man/systemd.service.html #}
 
 [Unit]
 Description     = jolokia
@@ -7,8 +8,13 @@ After           = syslog.target network.target
 Type            = forking
 PIDFile         = {{ jolokia_home }}/jolokia.pid
 RemainAfterExit = no
-Restart         = on-failure
-RestartSec      = 10s
+{% set _attr = ['always','on-success','on-failure','on-abnormal','on-abort','on-watchdog'] %}
+{% if jolokia_systemd_restart in _attr %}
+Restart         = {{ jolokia_systemd_restart }}
+{% if jolokia_systemd_restart_sleep is defined %}
+RestartSec      = {{ jolokia_systemd_restart_sleep }}
+{% endif %}
+{% endif %}
 
 User            = {{ jolokia_user }}
 Group           = {{ jolokia_group }}

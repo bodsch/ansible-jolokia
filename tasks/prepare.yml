@@ -59,3 +59,25 @@
   file:
     path: "{{ deployment_tmp_directory }}"
     state: directory
+
+- name: create logrotate script
+  block:
+
+    - name: logrotate configuration directory
+      file:
+        path: "{{ logrotate_conf_dir }}"
+        state: directory
+
+    - name: remove logrotate config
+      file:
+        path: "{{ logrotate_conf_dir }}/jolokia"
+        state: absent
+      when:
+        - not jolokia_logrotate_enabled
+
+    - name: create logrotate config
+      template:
+        src: jolokia_logrotate.j2
+        dest: "{{ logrotate_conf_dir }}/jolokia"
+      when:
+        - jolokia_logrotate_enabled

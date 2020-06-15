@@ -11,9 +11,11 @@
     java_packages:
       - openjdk-11-jdk
 
-    jolokia_debug: true
+    # jolokia_debug: true
+
+    jolokia_systemd_restart_sleep: 1m
 
   roles:
     # - role: java
-    - role: corretto
+    # - role: corretto
     - role: ansible-jolokia
