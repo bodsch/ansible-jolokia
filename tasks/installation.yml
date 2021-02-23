@@ -34,6 +34,7 @@
       copy:
         src: "{{ local_tmp_directory }}/{{ jolokia_file_name }}"
         dest: "{{ deployment_tmp_directory }}"
+        mode: 0640
 
     - name: unpack archive
       unarchive:

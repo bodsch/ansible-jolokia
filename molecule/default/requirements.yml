@@ -1,10 +1,5 @@
 ---
 
-# - name: coremedia
-#   src: https://gitlab.com/coremedia-as-code/deployment/ansible-roles/coremedia
-#   scm: git
-#   version: 1.1.0
-
 - name: java
   src: https://github.com/geerlingguy/ansible-role-java.git
   scm: git
@@ -19,4 +14,3 @@
   src: https://gitlab.com/coremedia-as-code/deployment/ansible-roles/tomcat.git
   scm: git
   version: 2.1.0
-

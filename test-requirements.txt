@@ -1,8 +1,13 @@
-molecule>=2.15.0
+molecule
+molecule-docker
 docker
-ansible-lint>=3.4.0
-testinfra>=1.7.0
+ansible-lint==5.0.1
+yamllint
+flake8
 jmespath
-cryptography
-# pyjolokia==0.3.1
-git+https://github.com/bodsch/pyjolokia@feature/support-jolokia-target#pyjolokia
+pytest
+pytest-testinfra
+tox
+tox-gh-actions
+
+git+https://github.com/bodsch/pyjolokia@0.3.2
