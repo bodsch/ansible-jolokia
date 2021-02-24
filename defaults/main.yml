@@ -11,7 +11,7 @@ jolokia_java_home: ''
 
 jolokia_tomcat_roles:
   - jolokia
-#  - admin
+
 jolokia_tomcat_users:
   - username: monitoring
     password: monitoring
@@ -21,7 +21,6 @@ jolokia_tomcat_users:
 jolokia_version: 1.6.2
 jolokia_file_name: "jolokia-war-{{ jolokia_version }}.war"
 jolokia_download_url: "http://search.maven.org/remotecontent?filepath=org/jolokia/jolokia-war/{{ jolokia_version }}/{{ jolokia_file_name }}"
-# https://search.maven.org/remotecontent?filepath=org/jolokia/jolokia-war/1.6.2/jolokia-war-1.6.2.war
 
 jolokia_home: /opt/jolokia
 
@@ -64,10 +63,10 @@ jolokia_catalina_opts:
 
 jolokia_debug: false
 
-jolokia_logrotate_enabled: true
+jolokia_logrotate_enabled: false
 jolokia_logrotate:
   paths:
-    - /var/log/jolokia/*.log
+    - "{{ jolokia_home }}/current/logs/*.log"
   options:
     - daily
     - rotate 2

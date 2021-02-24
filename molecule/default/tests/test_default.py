@@ -6,12 +6,7 @@ from ansible.template import Templar
 
 import pytest
 import os
-# import re
-# import yaml
-# import json
-
-# from pyjolokia import Jolokia, JolokiaError
-# from errno import ECONNREFUSED
+import json
 
 import testinfra.utils.ansible_runner
 
@@ -119,65 +114,19 @@ def test_open_port(host, ports):
     assert application.is_listening
 
 
-# def test_request(host):
-#
-#     v = host.ansible.get_variables()
-#
-#     hostname = v.get('inventory_hostname')
-#     print(testinfra.get_host("ansible://{}".format(hostname)))
-#
-#     jolokia_url = "http://{}:8080/jolokia/".format(hostname)
-#     jolokia_target = "service:jmx:rmi:///jndi/rmi://{}:{}/jmxrmi".format('localhost', 22222)
-#
-#     print(jolokia_url)
-#
-#     j4p = Jolokia( jolokia_url )
-#     # j4p.auth(httpusername='jolokia', httppassword='jolokia')
-#     j4p.config( ignoreErrors = 'true', ifModifiedSince = 'true', canonicalNaming = 'true' )
-#     j4p.target( url = jolokia_target )
-#
-#     data = {
-#         "Runtime": {
-#           "mbean": "java.lang:type=Runtime",
-#           "attribute": [
-#             'Uptime',
-#             'StartTime']
-#         },
-#         "Memory": {
-#           "mbean": "java.lang:type=Memory",
-#           "attribute": [
-#             'HeapMemoryUsage',
-#             'NonHeapMemoryUsage']
-#         }
-#     }
-#
-#     for instance in data.keys():
-#
-#         if isinstance(data[instance], dict):
-#             mbean          = data[instance]["mbean"]
-#             attribute_list = data[instance]["attribute"]
-#
-#             try:
-#                 j4p.add_request(
-#                     type = 'read',
-#                     mbean = mbean,
-#                     attribute = (",".join(attribute_list)) )
-#             except JolokiaError as error:
-#                 print(error)
-#
-#     response = j4p.getRequests()
-#
-#     # print(json.dumps( response, indent = 2 ))
-#
-#     for v in response:
-#
-#         status = v.get("status")
-#         # print(status)
-#         assert int(status) == 201
-#
-#     # html = host.run("curl http://localhost:80/jolokia/").stdout_bytes
-#     #
-#     # print(json.dumps( html, indent = 2 ))
-#     #
-#     # assert False
-#
+def test_request(host, get_vars):
+    """
+    """
+    jolokia_version = get_vars.get('jolokia_version')
+    cmd = host.run("curl http://localhost:8080/jolokia")
+
+    if(cmd.succeeded):
+        j = json.loads(cmd.stdout)
+
+        version = j.get('value', {}).get('agent', '0')
+        status = j.get('status')
+
+        assert status == 200
+        assert version == jolokia_version
+    else:
+        assert cmd.failed
