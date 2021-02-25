@@ -157,7 +157,7 @@
     <url-pattern>/*</url-pattern>
   </servlet-mapping>
 
-{% if jolokia_tomcat_users is defined and jolokia_tomcat_users | count != 0 %}
+{% if jolokia_tomcat.users is defined and jolokia_tomcat.users | count != 0 %}
 <!--
   <login-config>
     <auth-method>BASIC</auth-method>

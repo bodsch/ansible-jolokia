@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- {{ ansible_managed }} -->
 
-<Server port="{{ jolokia_tomcat_shutdown_port | default('8005') }}" shutdown="SHUTDOWN">
+<Server port="{{ jolokia_tomcat.shutdown_port | default('8005') }}" shutdown="SHUTDOWN">
   <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
   <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" />
   <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener" />
@@ -14,16 +14,16 @@
               minSpareThreads="5" />
 
     <Connector executor="tomcatThreadPool"
-               port="{{ jolokia_tomcat_http_port | default('8080') }}"
-               address="{{ jolokia_tomcat_http_bind | default('0.0.0.0') }}"
+               port="{{ jolokia_tomcat.http_port | default('8080') }}"
+               address="{{ jolokia_tomcat.http_bind | default('0.0.0.0') }}"
                protocol="HTTP/1.1"
                connectionTimeout="20000"
                URIEncoding="UTF-8"
                bindOnInit="false" />
 <!--
     <Connector executor="tomcatThreadPool"
-               port="{{ jolokia_tomcat_ajp_port | default('8099') }}"
-               address="{{ jolokia_tomcat_ajp_bind | default('0.0.0.0') }}"
+               port="{{ jolokia_tomcat.ajp_port | default('8099') }}"
+               address="{{ jolokia_tomcat.ajp_bind | default('0.0.0.0') }}"
                protocol="AJP/1.3"
                URIEncoding="UTF-8"/>
 -->

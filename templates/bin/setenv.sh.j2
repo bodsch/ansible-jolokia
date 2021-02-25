@@ -27,12 +27,14 @@ export JAVA_HOME
 # -XX:+PrintTenuringDistribution     #
 
 {% if jolokia_catalina_opts is defined and jolokia_catalina_opts | length != 0 %}
+{# from role or inventory #}
 {% for o in jolokia_catalina_opts %}
 CATALINA_OPTS="${CATALINA_OPTS} {{ o }}"
 {% endfor %}
 {% else %}
-CATALINA_OPTS="${CATALINA_OPTS} -XX:InitialHeapSize={{ jolokia_tomcat_initial_heap_size }}"
-CATALINA_OPTS="${CATALINA_OPTS} -XX:MaxHeapSize={{ jolokia_tomcat_max_heap_size }}"
+{# default values #}
+CATALINA_OPTS="${CATALINA_OPTS} -XX:InitialHeapSize={{ jolokia_tomcat.initial_heap_size }}"
+CATALINA_OPTS="${CATALINA_OPTS} -XX:MaxHeapSize={{ jolokia_tomcat.max_heap_size }}"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:NewSize=32m"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:MaxNewSize=64m"
 CATALINA_OPTS="${CATALINA_OPTS} -XX:+DisableExplicitGC"

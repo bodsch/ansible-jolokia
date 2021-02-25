@@ -8,11 +8,13 @@ After           = syslog.target network.target
 Type            = forking
 PIDFile         = {{ jolokia_home }}/jolokia.pid
 RemainAfterExit = no
+{% if jolokia_systemd.restart is defined %}
 {% set _attr = ['always','on-success','on-failure','on-abnormal','on-abort','on-watchdog'] %}
-{% if jolokia_systemd_restart in _attr %}
-Restart         = {{ jolokia_systemd_restart }}
-{% if jolokia_systemd_restart_sleep is defined %}
-RestartSec      = {{ jolokia_systemd_restart_sleep }}
+{% if jolokia_systemd.restart in _attr %}
+Restart         = {{ jolokia_systemd.restart }}
+{% endif %}
+{% if jolokia_systemd.restart_sleep is defined %}
+RestartSec      = {{ jolokia_systemd.restart_sleep }}
 {% endif %}
 {% endif %}
 

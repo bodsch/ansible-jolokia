@@ -1,46 +1,32 @@
 ---
 
-# tomcat_version: '7.0.94'
-#
-# tomcat_major_version: "{{ tomcat_version.split('.')[0] }}"
-#
-# # https://archive.apache.org/dist/tomcat/tomcat-9/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz
-# tomcat_download_url: "https://archive.apache.org/dist/tomcat/tomcat-{{ tomcat_major_version }}/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
-
-jolokia_java_home: ''
-
-jolokia_tomcat_roles:
-  - jolokia
-
-jolokia_tomcat_users:
-  - username: monitoring
-    password: monitoring
-    roles:
-      - jolokia
-
 jolokia_version: 1.6.2
 jolokia_file_name: "jolokia-war-{{ jolokia_version }}.war"
-jolokia_download_url: "http://search.maven.org/remotecontent?filepath=org/jolokia/jolokia-war/{{ jolokia_version }}/{{ jolokia_file_name }}"
+jolokia_download_url: "https://repo1.maven.org/maven2/org/jolokia/jolokia-war/{{ jolokia_version }}/{{ jolokia_file_name }}"
 
 jolokia_home: /opt/jolokia
 
 jolokia_user: jolokia
 jolokia_group: jolokia
 
-jolokia_systemd_restart: 'on-failure'
-jolokia_systemd_restart_sleep: '20s'
+jolokia_debug: false
 
-# jolokia_tomcat_http_port: 8080
-# jolokia_tomcat_http_bind: 127.0.0.1
-# jolokia_tomcat_ajp_port: 8099
-# jolokia_tomcat_ajp_bind: 127.0.0.1
+jolokia_systemd:
+  restart: 'on-failure'
+  restart_sleep: '20s'
 
-jolokia_tomcat_initial_heap_size: 64m
-jolokia_tomcat_max_heap_size: 128m
+jolokia_tomcat:
+  roles: []
+  users: []
+
+jolokia_jmx_remote:
+  port: 22222
+  authenticate: 'false'
+  ssl: 'false'
 
 jolokia_catalina_opts:
-  - -XX:InitialHeapSize={{ jolokia_tomcat_initial_heap_size }}
-  - -XX:MaxHeapSize={{ jolokia_tomcat_max_heap_size }}
+  - -XX:InitialHeapSize={{ jolokia_tomcat.initial_heap_size }}
+  - -XX:MaxHeapSize={{ jolokia_tomcat.max_heap_size }}
   - -XX:NewSize=32m
   - -XX:MaxNewSize=64m
   - -XX:+DisableExplicitGC
@@ -54,17 +40,16 @@ jolokia_catalina_opts:
   - -Djava.net.preferIPv4Stack=true
   - -Djava.net.preferIPv4Addresses
   - -Djava.security.egd=file:/dev/./urandom
-  - -Dcom.sun.management.jmxremote.port=22222
-  - -Dcom.sun.management.jmxremote.authenticate=false
-  - -Dcom.sun.management.jmxremote.ssl=false
+  - -Dcom.sun.management.jmxremote.port={{ jolokia_jmx_remote.port }}
+  - -Dcom.sun.management.jmxremote.authenticate={{ jolokia_jmx_remote.authenticate }}
+  - -Dcom.sun.management.jmxremote.ssl={{ jolokia_jmx_remote.ssl }}
   - -Dsun.net.inetaddr.ttl=15
   - -Dsun.rmi.dgc.client.gcInterval=3600000
   - -Dsun.rmi.transport.tcp.responseTimeout=30000
 
-jolokia_debug: false
 
-jolokia_logrotate_enabled: false
 jolokia_logrotate:
+  enabled: false
   paths:
     - "{{ jolokia_home }}/current/logs/*.log"
   options:

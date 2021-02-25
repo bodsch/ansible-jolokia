@@ -1,5 +1,19 @@
 ---
 
+- name: create local temporary path
+  delegate_to: localhost
+  become: false
+  file:
+    path: "{{ local_tmp_directory }}"
+    state: directory
+    mode: 0750
+
+- name: create temporary path for deployment artefacts
+  file:
+    path: "{{ deployment_tmp_directory }}"
+    state: directory
+    mode: 0750
+
 - name: install requirements
   package:
     name: "{{ item }}"
@@ -48,19 +62,15 @@
     group: "{{ jolokia_group }}"
     mode: 0750
 
-- name: create local temporary path
-  become: false
-  file:
-    path: "{{ local_tmp_directory }}"
-    state: directory
-    mode: 0750
-  delegate_to: localhost
+- name: merge jolokia_tomcat configuration between defaults and custom
+  set_fact:
+    jolokia_tomcat: "{{ jolokia_tomcat_defaults |
+      combine( jolokia_tomcat, recursive=True ) }}"
 
-- name: create temporary path for deployment artefacts
-  file:
-    path: "{{ deployment_tmp_directory }}"
-    state: directory
-    mode: 0640
+- name: merge jolokia_systemd configuration between defaults and custom
+  set_fact:
+    jolokia_systemd: "{{ jolokia_systemd_default |
+      combine( jolokia_systemd, recursive=True ) }}"
 
 - name: create logrotate script
   block:
@@ -75,7 +85,7 @@
         path: "{{ logrotate_conf_dir }}/jolokia"
         state: absent
       when:
-        - not jolokia_logrotate_enabled
+        - not jolokia_logrotate.enabled
 
     - name: create logrotate config
       template:
@@ -83,4 +93,4 @@
         dest: "{{ logrotate_conf_dir }}/jolokia"
         mode: 0640
       when:
-        - jolokia_logrotate_enabled
+        - jolokia_logrotate.enabled

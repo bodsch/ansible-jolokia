@@ -1,19 +1,5 @@
 ---
 
-- name: create deployment temporary directory
-  file:
-    path: "{{ deployment_tmp_directory }}"
-    state: directory
-    mode: 0750
-
-- name: create local temporary directory
-  become: false
-  file:
-    path: "{{ local_tmp_directory }}"
-    state: directory
-    mode: 0750
-  delegate_to: localhost
-
 - name: download tomcat binary to local folder
   become: false
   get_url:
@@ -66,6 +52,7 @@
       file:
         name: "{{ jolokia_home }}/current/webapps/{{ item }}"
         state: absent
+      no_log: true
       loop:
         - docs
         - examples
@@ -73,4 +60,6 @@
         - manager
         - ROOT
 
-  when: _tomcat_unpack.stat is defined and not _tomcat_unpack.stat.exists
+  when:
+    - _tomcat_unpack.stat is defined
+    - not _tomcat_unpack.stat.exists

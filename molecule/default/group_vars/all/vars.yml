@@ -1,3 +1,6 @@
 ---
 
-jolokia_systemd_restart_sleep: 1m
+jolokia_systemd:
+  restart_sleep: 1m
+
+...

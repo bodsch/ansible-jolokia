@@ -1,7 +1,7 @@
 ---
 
-deployment_tmp_directory: /tmp/deployment_artefacts
-local_tmp_directory: /var/tmp/ansible_artefacts/
+deployment_tmp_directory: /tmp/jolokia/{{ jolokia_version }}
+local_tmp_directory: /tmp/jolokia/{{ jolokia_version }}
 logrotate_conf_dir: /etc/logrotate.d
 
 
@@ -12,3 +12,18 @@ _systemd_lib_directory:
 
 systemd_lib_directory: "{{ _systemd_lib_directory[ansible_os_family | lower] |
   default(_systemd_lib_directory['default']) }}"
+
+jolokia_tomcat_defaults:
+  initial_heap_size: 64m
+  max_heap_size: 128m
+  roles:
+    - jolokia
+  users:
+    - username: monitoring
+      password: monitoring
+      roles:
+        - jolokia
+
+jolokia_systemd_default:
+  restart: 'on-failure'
+  restart_sleep: '20s'
