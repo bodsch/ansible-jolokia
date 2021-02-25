@@ -1,26 +1,66 @@
 # coding: utf-8
 from __future__ import unicode_literals
 
-import pytest
-import re
-import os
-import yaml
-import json
-# import subprocess
-from pyjolokia import Jolokia, JolokiaError
-from errno import ECONNREFUSED
+from ansible.parsing.dataloader import DataLoader
+from ansible.template import Templar
 
-# import testinfra
+import pytest
+import os
+import json
+
 import testinfra.utils.ansible_runner
+
+import pprint
+pp = pprint.PrettyPrinter()
 
 testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
     os.environ['MOLECULE_INVENTORY_FILE']).get_hosts('all')
 
 
+def base_directory():
+    """ ... """
+    cwd = os.getcwd()
+
+    if('group_vars' in os.listdir(cwd)):
+        directory = "../.."
+        molecule_directory = "."
+    else:
+        directory = "."
+        molecule_directory = "molecule/{}".format(os.environ.get('MOLECULE_SCENARIO_NAME'))
+
+    return directory, molecule_directory
+
+
+"""
+    parse ansible variables
+    - defaults/main.yml
+    - vars/main.yml
+    - molecule/${MOLECULE_SCENARIO_NAME}/group_vars/all/vars.yml
+"""
+
+
 @pytest.fixture()
-def AnsibleDefaults():
-    with open("../../defaults/main.yml", 'r') as stream:
-        return yaml.load(stream)
+def get_vars(host):
+    """ ... """
+    base_dir, molecule_dir = base_directory()
+
+    file_defaults = "file={}/defaults/main.yml name=role_defaults".format(base_dir)
+    file_vars = "file={}/vars/main.yml name=role_vars".format(base_dir)
+    file_molecule = "file={}/group_vars/all/vars.yml name=test_vars".format(molecule_dir)
+
+    defaults_vars = host.ansible("include_vars", file_defaults).get("ansible_facts").get("role_defaults")
+    vars_vars = host.ansible("include_vars", file_vars).get("ansible_facts").get("role_vars")
+    molecule_vars = host.ansible("include_vars", file_molecule).get("ansible_facts").get("test_vars")
+
+    ansible_vars = defaults_vars
+    ansible_vars.update(vars_vars)
+    ansible_vars.update(molecule_vars)
+
+    templar = Templar(loader=DataLoader(), variables=ansible_vars)
+    result = templar.template(ansible_vars, fail_on_undefined=False)
+
+    return result
+
 
 @pytest.mark.parametrize("dirs", [
     "/etc/ansible/facts.d",
@@ -68,71 +108,25 @@ def test_service(host):
 def test_open_port(host, ports):
 
     for i in host.socket.get_listening_sockets():
-        print( i )
+        print(i)
 
     application = host.socket("tcp://%s" % (ports))
     assert application.is_listening
 
 
-# def test_request(host):
-#
-#     v = host.ansible.get_variables()
-#
-#     hostname = v.get('inventory_hostname')
-#     print(testinfra.get_host("ansible://{}".format(hostname)))
-#
-#     jolokia_url = "http://{}:8080/jolokia/".format(hostname)
-#     jolokia_target = "service:jmx:rmi:///jndi/rmi://{}:{}/jmxrmi".format('localhost', 22222)
-#
-#     print(jolokia_url)
-#
-#     j4p = Jolokia( jolokia_url )
-#     # j4p.auth(httpusername='jolokia', httppassword='jolokia')
-#     j4p.config( ignoreErrors = 'true', ifModifiedSince = 'true', canonicalNaming = 'true' )
-#     j4p.target( url = jolokia_target )
-#
-#     data = {
-#         "Runtime": {
-#           "mbean": "java.lang:type=Runtime",
-#           "attribute": [
-#             'Uptime',
-#             'StartTime']
-#         },
-#         "Memory": {
-#           "mbean": "java.lang:type=Memory",
-#           "attribute": [
-#             'HeapMemoryUsage',
-#             'NonHeapMemoryUsage']
-#         }
-#     }
-#
-#     for instance in data.keys():
-#
-#         if isinstance(data[instance], dict):
-#             mbean          = data[instance]["mbean"]
-#             attribute_list = data[instance]["attribute"]
-#
-#             try:
-#                 j4p.add_request(
-#                     type = 'read',
-#                     mbean = mbean,
-#                     attribute = (",".join(attribute_list)) )
-#             except JolokiaError as error:
-#                 print(error)
-#
-#     response = j4p.getRequests()
-#
-#     # print(json.dumps( response, indent = 2 ))
-#
-#     for v in response:
-#
-#         status = v.get("status")
-#         # print(status)
-#         assert int(status) == 201
-#
-#     # html = host.run("curl http://localhost:80/jolokia/").stdout_bytes
-#     #
-#     # print(json.dumps( html, indent = 2 ))
-#     #
-#     # assert False
-#
+def test_request(host, get_vars):
+    """
+    """
+    jolokia_version = get_vars.get('jolokia_version')
+    cmd = host.run("curl http://localhost:8080/jolokia")
+
+    if(cmd.succeeded):
+        j = json.loads(cmd.stdout)
+
+        version = j.get('value', {}).get('agent', '0')
+        status = j.get('status')
+
+        assert status == 200
+        assert version == jolokia_version
+    else:
+        assert cmd.failed

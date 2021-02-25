@@ -2,7 +2,7 @@
 
 - block:
 
-    - name: get system timestamp  # noqa 305
+    - name: get system timestamp  # noqa command-instead-of-shell
       shell: 'date +"%Y-%m-%d %H-%M-%S %Z"'
       register: timestamp
       no_log: true
