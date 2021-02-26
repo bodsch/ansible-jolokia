@@ -91,6 +91,9 @@ jobs:
 
       - name: test with tox
         run: |
+          cd ../
+          mv ansible-jolokia bodsch.jolokia
+          cd bodsch.jolokia
           tox -e py$(printf "${{ matrix.python-version }}" | tr -d '.')-ansible$(printf "${{ matrix.ansible-version }}" | tr -d '.') -- molecule test
         env:
           PY_COLORS: '1'
