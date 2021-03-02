@@ -2,7 +2,7 @@
 
 galaxy_info:
   author: Bodo Schulz
-  role_name: ansible-jolokia
+  role_name: jolokia
   description: install and configure jolokia as tomcat application
   license: Apache
   min_ansible_version: 2.9
@@ -25,5 +25,5 @@ galaxy_info:
     - web
 
 dependencies:
-  - role: tomcat
+  - role: bodsch/tomcat
     version: 2.1.0
