@@ -7,4 +7,4 @@
     NETRC: ''
 
   roles:
-    - role: ansible.jolokia
+    - role: bodsch.jolokia
