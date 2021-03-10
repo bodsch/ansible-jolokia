@@ -1,29 +1,35 @@
 ---
 
 galaxy_info:
-  author: Bodo Schulz
   role_name: jolokia
+  author: Bodo Schulz
   description: install and configure jolokia as tomcat application
   license: Apache
   min_ansible_version: 2.9
   platforms:
     - name: Ubuntu
       versions:
-        - bionic  # 18.04
-        - focal   # 20.04
+        # 16.04
+        - cosmic
+        # 18.04
+        - bionic
+        # 20.04
+        - focal
     - name: Debian
       versions:
-        - etch    # 9
-        - buster  # 10
+        # 9
+        - etch
+        # 10
+        - buster
     - name: EL
       versions:
         - 7
         - 8
+
   galaxy_tags:
     - monitoring
     - java
+    - jmx
     - web
 
-dependencies:
-  - role: bodsch/tomcat
-    version: 2.1.0
+dependencies: []

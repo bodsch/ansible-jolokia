@@ -13,7 +13,6 @@ Ansible role to install an jolokia application into an tomcat
 ## Requirements & Dependencies
 
 - java
-- tomcat
  
 ### Operating systems
 

@@ -4,8 +4,3 @@
   src: https://github.com/geerlingguy/ansible-role-java.git
   scm: git
   version: 1.10.0
-
-- name: tomcat
-  src: https://gitlab.com/coremedia-as-code/deployment/ansible-roles/tomcat.git
-  scm: git
-  version: 2.1.0
