@@ -3,8 +3,8 @@
 - name: download tomcat binary to local folder
   become: false
   get_url:
-    url: "{{ tomcat_download_url }}"
-    dest: "{{ local_tmp_directory }}/apache-tomcat-{{ tomcat_version }}.tar.gz"
+    url: "{{ jolokia_tomcat_download_url }}"
+    dest: "{{ local_tmp_directory }}/apache-tomcat-{{ jolokia_tomcat_version }}.tar.gz"
   register: _download_archive
   until: _download_archive is succeeded
   retries: 5
@@ -17,7 +17,7 @@
 
 - name: propagate tomcat archiv
   copy:
-    src: "{{ local_tmp_directory }}/apache-tomcat-{{ tomcat_version }}.tar.gz"
+    src: "{{ local_tmp_directory }}/apache-tomcat-{{ jolokia_tomcat_version }}.tar.gz"
     dest: "{{ deployment_tmp_directory }}"
     mode: 0640
   tags:
@@ -25,14 +25,13 @@
 
 - name: check for unpacked tomcat
   stat:
-    path: "{{ jolokia_home }}/apache-tomcat-{{ tomcat_version }}"
+    path: "{{ jolokia_home }}/apache-tomcat-{{ jolokia_tomcat_version }}"
   register: _tomcat_unpack
-
 
 - block:
     - name: unpack tomcat binary
       unarchive:
-        src: "{{ deployment_tmp_directory }}/apache-tomcat-{{ tomcat_version }}.tar.gz"
+        src: "{{ deployment_tmp_directory }}/apache-tomcat-{{ jolokia_tomcat_version }}.tar.gz"
         dest: "{{ jolokia_home }}/"
         owner: "{{ jolokia_user }}"
         group: "{{ jolokia_group }}"
@@ -41,7 +40,7 @@
 
     - name: create current link for tomcat
       file:
-        src: "{{ jolokia_home }}/apache-tomcat-{{ tomcat_version }}"
+        src: "{{ jolokia_home }}/apache-tomcat-{{ jolokia_tomcat_version }}"
         dest: "{{ jolokia_home }}/current"
         state: link
         force: true

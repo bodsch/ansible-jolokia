@@ -47,7 +47,6 @@ jolokia_catalina_opts:
   - -Dsun.rmi.dgc.client.gcInterval=3600000
   - -Dsun.rmi.transport.tcp.responseTimeout=30000
 
-
 jolokia_logrotate:
   enabled: false
   paths:
@@ -61,3 +60,6 @@ jolokia_logrotate:
     - compress
   scripts:
     postrotate: systemctl restart jolokia > /dev/null
+
+
+jolokia_tomcat_version: 9.0.14

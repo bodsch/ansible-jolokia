@@ -4,7 +4,6 @@ deployment_tmp_directory: /tmp/jolokia/{{ jolokia_version }}
 local_tmp_directory: /tmp/jolokia/{{ jolokia_version }}
 logrotate_conf_dir: /etc/logrotate.d
 
-
 _systemd_lib_directory:
   default: /lib/systemd/system
   debian: /lib/systemd/system
@@ -27,3 +26,12 @@ jolokia_tomcat_defaults:
 jolokia_systemd_default:
   restart: 'on-failure'
   restart_sleep: '20s'
+
+tomcat_major_version: "{{ jolokia_tomcat_version.split('.')[0] }}"
+tomcat_patch_version: "{{ jolokia_tomcat_version.split('.')[2] }}"
+
+jolokia_tomcat_download_mirror: "https://archive.apache.org/dist/tomcat/tomcat-{{ tomcat_major_version }}/v{{ jolokia_tomcat_version }}"
+
+# https://archive.apache.org/dist/tomcat/tomcat-9/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz
+jolokia_tomcat_download_url: "{{ jolokia_tomcat_download_mirror }}/bin/apache-tomcat-{{ jolokia_tomcat_version }}.tar.gz"
+jolokia_tomcat_extra_jmx_url: "{{ jolokia_tomcat_download_mirror }}/bin/extras/catalina-jmx-remote.jar"
