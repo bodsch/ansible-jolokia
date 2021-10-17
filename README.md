@@ -20,7 +20,7 @@ Ansible role to install an jolokia application into an tomcat
 
 Tested on
 
-* Debian 9 / 10
+* Debian 10
 * Ubuntu 18.04 / 20.04
 * CentOS 8
 * Oracle Linux 8
