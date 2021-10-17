@@ -13,7 +13,9 @@ Ansible role to install an jolokia application into an tomcat
 ## Requirements & Dependencies
 
 - java
- 
+- python3
+- apache tomcat 9
+
 ### Operating systems
 
 Tested on

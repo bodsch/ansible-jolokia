@@ -1,0 +1,9 @@
+---
+
+jolokia_dependecies:
+  - unzip
+  - net-tools
+
+systemd_lib_directory: /lib/systemd/system
+
+...

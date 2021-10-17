@@ -1,16 +1,6 @@
 ---
 
-deployment_tmp_directory: /tmp/jolokia/{{ jolokia_version }}
-local_tmp_directory: /tmp/jolokia/{{ jolokia_version }}
-logrotate_conf_dir: /etc/logrotate.d
-
-_systemd_lib_directory:
-  default: /lib/systemd/system
-  debian: /lib/systemd/system
-  redhat: /usr/lib/systemd/system
-
-systemd_lib_directory: "{{ _systemd_lib_directory[ansible_os_family | lower] |
-  default(_systemd_lib_directory['default']) }}"
+jolokia_dependecies: []
 
 jolokia_tomcat_defaults:
   initial_heap_size: 64m
@@ -35,3 +25,9 @@ jolokia_tomcat_download_mirror: "https://archive.apache.org/dist/tomcat/tomcat-{
 # https://archive.apache.org/dist/tomcat/tomcat-9/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz
 jolokia_tomcat_download_url: "{{ jolokia_tomcat_download_mirror }}/bin/apache-tomcat-{{ jolokia_tomcat_version }}.tar.gz"
 jolokia_tomcat_extra_jmx_url: "{{ jolokia_tomcat_download_mirror }}/bin/extras/catalina-jmx-remote.jar"
+
+
+deployment_tmp_directory: /tmp/jolokia/{{ jolokia_version }}
+local_tmp_directory: /tmp/jolokia/{{ jolokia_version }}
+
+logrotate_conf_dir: /etc/logrotate.d

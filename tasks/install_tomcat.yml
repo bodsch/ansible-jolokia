@@ -1,34 +1,34 @@
 ---
 
-- name: download tomcat binary to local folder
-  become: false
-  get_url:
-    url: "{{ jolokia_tomcat_download_url }}"
-    dest: "{{ local_tmp_directory }}/apache-tomcat-{{ jolokia_tomcat_version }}.tar.gz"
-  register: _download_archive
-  until: _download_archive is succeeded
-  retries: 5
-  delay: 2
-  # run_once: true
-  delegate_to: localhost
-  check_mode: false
-  tags:
-    - tomcat
-
-- name: propagate tomcat archiv
-  copy:
-    src: "{{ local_tmp_directory }}/apache-tomcat-{{ jolokia_tomcat_version }}.tar.gz"
-    dest: "{{ deployment_tmp_directory }}"
-    mode: 0640
-  tags:
-    - tomcat
-
-- name: check for unpacked tomcat
+- name: check for unpacked tomcat  {{ jolokia_tomcat_version }}
   stat:
     path: "{{ jolokia_home }}/apache-tomcat-{{ jolokia_tomcat_version }}"
   register: _tomcat_unpack
 
 - block:
+    - name: download tomcat {{ jolokia_tomcat_version }} archiv to local folder
+      become: false
+      get_url:
+        url: "{{ jolokia_tomcat_download_url }}"
+        dest: "{{ local_tmp_directory }}/apache-tomcat-{{ jolokia_tomcat_version }}.tar.gz"
+      register: _download_archive
+      until: _download_archive is succeeded
+      retries: 5
+      delay: 2
+      run_once: true
+      delegate_to: localhost
+      check_mode: false
+      tags:
+        - tomcat
+
+    - name: propagate tomcat archiv
+      copy:
+        src: "{{ local_tmp_directory }}/apache-tomcat-{{ jolokia_tomcat_version }}.tar.gz"
+        dest: "{{ deployment_tmp_directory }}"
+        mode: 0640
+      tags:
+        - tomcat
+
     - name: unpack tomcat binary
       unarchive:
         src: "{{ deployment_tmp_directory }}/apache-tomcat-{{ jolokia_tomcat_version }}.tar.gz"
@@ -58,7 +58,8 @@
         - host-manager
         - manager
         - ROOT
-
   when:
     - _tomcat_unpack.stat is defined
     - not _tomcat_unpack.stat.exists
+
+...

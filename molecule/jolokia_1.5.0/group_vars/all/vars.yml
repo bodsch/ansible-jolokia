@@ -1,0 +1,8 @@
+---
+
+jolokia_version: 1.5.0
+
+jolokia_systemd:
+  restart_sleep: 1m
+
+...

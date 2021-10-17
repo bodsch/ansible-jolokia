@@ -45,7 +45,9 @@
         mode: 0750
         copy: false
 
-  when: _deployed_application.stat is defined and not _deployed_application.stat.exists
+  when:
+    - _deployed_application.stat is defined
+    - not _deployed_application.stat.exists
 
 - name: create systemd service unit
   template:

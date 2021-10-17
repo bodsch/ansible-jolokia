@@ -1,6 +1,6 @@
 ---
 
-jolokia_version: 1.6.2
+jolokia_version: 1.7.1
 jolokia_file_name: "jolokia-war-{{ jolokia_version }}.war"
 jolokia_download_url: "https://repo1.maven.org/maven2/org/jolokia/jolokia-war/{{ jolokia_version }}/{{ jolokia_file_name }}"
 
@@ -62,4 +62,4 @@ jolokia_logrotate:
     postrotate: systemctl restart jolokia > /dev/null
 
 
-jolokia_tomcat_version: 9.0.14
+jolokia_tomcat_version: 9.0.54
