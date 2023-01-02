@@ -1,10 +1,14 @@
 ---
 
 - name: systemctl daemon-reload
-  systemd:
+  become: true
+  ansible.builtin.systemd:
     daemon_reload: true
+    force: true
+  when:
+    - ansible_service_mgr | lower == "systemd"
 
 - name: restart jolokia
-  service:
+  ansible.builtin.service:
     name: jolokia
     state: restarted

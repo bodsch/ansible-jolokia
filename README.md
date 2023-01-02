@@ -1,13 +1,17 @@
 
+# Ansible Role:  `jolokia`
+
 Ansible role to install an jolokia application into an tomcat
 
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/bodsch/ansible-jolokia/CI)][ci]
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/bodsch/ansible-jolokia/main.yml?branch=main)][ci]
 [![GitHub issues](https://img.shields.io/github/issues/bodsch/ansible-jolokia)][issues]
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/bodsch/ansible-jolokia)][releases]
+[![Ansible Quality Score](https://img.shields.io/ansible/quality/50067?label=role%20quality)][quality]
 
 [ci]: https://github.com/bodsch/ansible-jolokia/actions
 [issues]: https://github.com/bodsch/ansible-jolokia/issues?q=is%3Aopen+is%3Aissue
 [releases]: https://github.com/bodsch/ansible-jolokia/releases
+[quality]: https://galaxy.ansible.com/bodsch/jolokia
 
 
 ## Requirements & Dependencies
@@ -27,7 +31,7 @@ Tested on
 ## usage
 
 
-```
+```yaml
 jolokia_version: 1.6.2
 jolokia_file_name: "jolokia-war-{{ jolokia_version }}.war"
 jolokia_download_url: "https://repo1.maven.org/maven2/org/jolokia/jolokia-war/{{ jolokia_version }}/{{ jolokia_file_name }}"
@@ -53,7 +57,7 @@ jolokia_jmx_remote:
 
 To configure tomcat: (for [example](vars/main.yml))
 
-```
+```yaml
 jolokia_tomcat:
   roles: []
   users: []
@@ -61,7 +65,7 @@ jolokia_tomcat:
 
 For example, add a user and a role for security reason:
 
-```
+```yaml
 jolokia_tomcat:
   roles:
     - jolokia
@@ -74,7 +78,7 @@ jolokia_tomcat:
 
 Tweak tomcat memory settings:
 
-```
+```yaml
 jolokia_tomcat:
   initial_heap_size: 64m
   max_heap_size: 256m
@@ -83,22 +87,25 @@ jolokia_tomcat:
 
 To configure own Catalina options. ([defaults](defaults/main.yml))
 
-```
+```yaml
 jolokia_catalina_opts: []
 ```
 
 
 To enable and configure optional logrotate. ([defaults](defaults/main.yml))
 
-```
+```yaml
 jolokia_logrotate: {}
 ```
 
-### tests
 
-`tox -e py38-ansible29 -- molecule test`
 
+## Author
+
+- Bodo Schulz
 
 ## License
 
-Apache License 2.0
+[Apache](LICENSE)
+
+`FREE SOFTWARE, HELL YEAH!`

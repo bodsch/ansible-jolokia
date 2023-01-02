@@ -1,25 +1,25 @@
 ---
 
 - name: prepare
-  import_tasks: prepare.yml
+  ansible.builtin.import_tasks: prepare.yml
   tags:
     - jolokia
     - prepare
 
 - name: install
-  import_tasks: installation.yml
+  ansible.builtin.import_tasks: installation.yml
   tags:
     - jolokia
     - install
 
 - name: configure
-  import_tasks: configure.yml
+  ansible.builtin.import_tasks: configure.yml
   tags:
     - jolokia
     - configure
 
 - name: service
-  import_tasks: service.yml
+  ansible.builtin.import_tasks: service.yml
   tags:
     - jolokia
     - service

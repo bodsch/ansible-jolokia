@@ -1,12 +1,12 @@
 ---
 
 - name: assert python version
-  assert:
+  ansible.builtin.assert:
     that: ansible_python.version.major != 2
     msg: "Sorry, we don't support python 2 anymore!"
 
 - name: include OS specific configuration
-  include_vars: "{{ lookup('first_found', params) }}"
+  ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
   vars:
     params:
       paths:
@@ -22,60 +22,66 @@
       skip: true
 
 - name: update package cache
-  package:
+  ansible.builtin.package:
     update_cache: true
 
 - name: install requirements
-  package:
+  ansible.builtin.package:
     name: "{{ jolokia_dependecies }}"
     state: present
 
 - name: create local temporary path
   delegate_to: localhost
   become: false
-  file:
+  ansible.builtin.file:
     path: "{{ local_tmp_directory }}"
     state: directory
     mode: 0750
 
 - name: create temporary path for deployment artefacts
-  file:
+  ansible.builtin.file:
     path: "{{ deployment_tmp_directory }}"
     state: directory
     mode: 0750
 
 - name: create ansible local facts directory
-  file:
+  ansible.builtin.file:
     dest: /etc/ansible/facts.d
     state: directory
     owner: root
     group: root
     mode: 0755
 
-- name: create jolokia group
-  group:
-    name: "{{ jolokia_group }}"
-    state: present
+- name: user and group handling
+  when:
+    - jolokia_user != "root"
+  block:
+    - name: create jolokia group
+      ansible.builtin.group:
+        name: "{{ jolokia_user }}"
+        state: present
+        system: true
 
-- name: create jolokia user
-  user:
-    name: "{{ jolokia_user }}"
-    group: "{{ jolokia_group }}"
-    shell: /sbin/nologin
-    createhome: true
-    comment: jolokia user
-    home: "{{ jolokia_home }}"
+    - name: create jolokia user
+      ansible.builtin.user:
+        name: "{{ jolokia_user }}"
+        groups: "{{ jolokia_group }}"
+        append: true
+        shell: /usr/sbin/nologin
+        system: true
+        createhome: false
+        home: "{{ jolokia_home }}"
 
-- name: create jolokia home directory
-  file:
-    path: "{{ jolokia_home }}"
-    state: directory
-    owner: "{{ jolokia_user }}"
-    group: "{{ jolokia_group }}"
-    mode: 0750
+    - name: create jolokia home directory
+      ansible.builtin.file:
+        path: "{{ jolokia_home }}"
+        state: directory
+        owner: "{{ jolokia_user }}"
+        group: "{{ jolokia_group }}"
+        mode: 0750
 
 - name: create application logging directory
-  file:
+  ansible.builtin.file:
     src: "{{ jolokia_home }}/current/logs"
     dest: "/var/log/jolokia"
     state: link
@@ -85,33 +91,28 @@
     group: "{{ jolokia_group }}"
     mode: 0750
 
-- name: merge jolokia_tomcat configuration between defaults and custom
-  set_fact:
-    jolokia_tomcat: "{{ jolokia_tomcat_defaults |
-      combine( jolokia_tomcat, recursive=True ) }}"
-
-- name: merge jolokia_systemd configuration between defaults and custom
-  set_fact:
-    jolokia_systemd: "{{ jolokia_systemd_default |
-      combine( jolokia_systemd, recursive=True ) }}"
+- name: merge jolokia configuration between defaults and custom
+  ansible.builtin.set_fact:
+    jolokia_tomcat: "{{ jolokia_tomcat_defaults | combine(jolokia_tomcat, recursive=True) }}"
+    jolokia_systemd: "{{ jolokia_systemd_default | combine(jolokia_systemd, recursive=True) }}"
 
 - name: create logrotate script
   block:
     - name: logrotate configuration directory
-      file:
+      ansible.builtin.file:
         path: "{{ logrotate_conf_dir }}"
         state: directory
         mode: 0750
 
     - name: remove logrotate config
-      file:
+      ansible.builtin.file:
         path: "{{ logrotate_conf_dir }}/jolokia"
         state: absent
       when:
         - not jolokia_logrotate.enabled
 
     - name: create logrotate config
-      template:
+      ansible.builtin.template:
         src: jolokia_logrotate.j2
         dest: "{{ logrotate_conf_dir }}/jolokia"
         mode: 0640

@@ -1,16 +1,21 @@
 ---
 
 - name: check for unpacked tomcat  {{ jolokia_tomcat_version }}
-  stat:
+  ansible.builtin.stat:
     path: "{{ jolokia_home }}/apache-tomcat-{{ jolokia_tomcat_version }}"
   register: _tomcat_unpack
 
-- block:
+- name: install tomcat
+  when:
+    - _tomcat_unpack.stat is defined
+    - not _tomcat_unpack.stat.exists
+  block:
     - name: download tomcat {{ jolokia_tomcat_version }} archiv to local folder
       become: false
-      get_url:
+      ansible.builtin.get_url:
         url: "{{ jolokia_tomcat_download_url }}"
         dest: "{{ local_tmp_directory }}/apache-tomcat-{{ jolokia_tomcat_version }}.tar.gz"
+        mode: 0640
       register: _download_archive
       until: _download_archive is succeeded
       retries: 5
@@ -22,7 +27,7 @@
         - tomcat
 
     - name: propagate tomcat archiv
-      copy:
+      ansible.builtin.copy:
         src: "{{ local_tmp_directory }}/apache-tomcat-{{ jolokia_tomcat_version }}.tar.gz"
         dest: "{{ deployment_tmp_directory }}"
         mode: 0640
@@ -30,7 +35,7 @@
         - tomcat
 
     - name: unpack tomcat binary
-      unarchive:
+      ansible.builtin.unarchive:
         src: "{{ deployment_tmp_directory }}/apache-tomcat-{{ jolokia_tomcat_version }}.tar.gz"
         dest: "{{ jolokia_home }}/"
         owner: "{{ jolokia_user }}"
@@ -39,7 +44,7 @@
         copy: false
 
     - name: create current link for tomcat
-      file:
+      ansible.builtin.file:
         src: "{{ jolokia_home }}/apache-tomcat-{{ jolokia_tomcat_version }}"
         dest: "{{ jolokia_home }}/current"
         state: link
@@ -48,7 +53,7 @@
         mode: 0640
 
     - name: remove default webapps
-      file:
+      ansible.builtin.file:
         name: "{{ jolokia_home }}/current/webapps/{{ item }}"
         state: absent
       no_log: true
@@ -58,8 +63,5 @@
         - host-manager
         - manager
         - ROOT
-  when:
-    - _tomcat_unpack.stat is defined
-    - not _tomcat_unpack.stat.exists
 
 ...

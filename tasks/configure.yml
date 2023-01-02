@@ -1,7 +1,7 @@
 ---
 
 - name: create setenv.sh
-  template:
+  ansible.builtin.template:
     src: bin/setenv.sh.j2
     dest: "{{ jolokia_home }}/current/bin/setenv.sh"
     owner: "{{ jolokia_user }}"
@@ -11,7 +11,7 @@
     - restart jolokia
 
 - name: configure tomcat - web.xml
-  template:
+  ansible.builtin.template:
     src: WEB-INF/web.xml.j2
     dest: "{{ jolokia_home }}/current/webapps/jolokia/WEB-INF/web.xml"
     owner: "{{ jolokia_user }}"
@@ -21,7 +21,7 @@
     - restart jolokia
 
 - name: configure tomcat - server.xml
-  template:
+  ansible.builtin.template:
     src: conf/server.xml.j2
     dest: "{{ jolokia_home }}/current/conf/server.xml"
     owner: "{{ jolokia_user }}"
@@ -31,7 +31,7 @@
     - restart jolokia
 
 - name: configure tomcat - tomcat-users.xml
-  template:
+  ansible.builtin.template:
     src: conf/tomcat-users.xml.j2
     dest: "{{ jolokia_home }}/current/conf/tomcat-users.xml"
     owner: "{{ jolokia_user }}"

@@ -62,4 +62,4 @@ jolokia_logrotate:
     postrotate: systemctl restart jolokia > /dev/null
 
 
-jolokia_tomcat_version: 9.0.54
+jolokia_tomcat_version: 9.0.70

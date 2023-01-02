@@ -1,15 +1,20 @@
 ---
 
-- include_tasks: install_tomcat.yml
+- name: install tomcat
+  ansible.builtin.include_tasks: install_tomcat.yml
 
 - name: check for deployed application
-  stat:
+  ansible.builtin.stat:
     path: "{{ jolokia_home }}/current/webapps/jolokia/META-INF/MANIFEST.MF"
   register: _deployed_application
 
-- block:
+- name: install jolokia
+  when:
+    - _deployed_application.stat is defined
+    - not _deployed_application.stat.exists
+  block:
     - name: create application directory
-      file:
+      ansible.builtin.file:
         path: "{{ jolokia_home }}/current/webapps/jolokia"
         state: directory
         owner: "{{ jolokia_user }}"
@@ -18,9 +23,10 @@
 
     - name: download jolokia application to local folder
       become: false
-      get_url:
+      ansible.builtin.get_url:
         url: "{{ jolokia_download_url }}"
         dest: "{{ local_tmp_directory }}/{{ jolokia_file_name }}"
+        mode: 0640
       register: _download_archive
       until: _download_archive is succeeded
       retries: 5
@@ -31,13 +37,13 @@
         - jolokia
 
     - name: deploy application archiv
-      copy:
+      ansible.builtin.copy:
         src: "{{ local_tmp_directory }}/{{ jolokia_file_name }}"
         dest: "{{ deployment_tmp_directory }}"
         mode: 0640
 
     - name: unpack archive
-      unarchive:
+      ansible.builtin.unarchive:
         src: "{{ deployment_tmp_directory }}/{{ jolokia_file_name }}"
         dest: "{{ jolokia_home }}/current/webapps/jolokia/"
         owner: "{{ jolokia_user }}"
@@ -45,12 +51,8 @@
         mode: 0750
         copy: false
 
-  when:
-    - _deployed_application.stat is defined
-    - not _deployed_application.stat.exists
-
 - name: create systemd service unit
-  template:
+  ansible.builtin.template:
     src: "init/systemd/jolokia.service.j2"
     dest: "{{ systemd_lib_directory }}/jolokia.service"
     owner: root
