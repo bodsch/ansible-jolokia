@@ -2,7 +2,6 @@
 
 galaxy_info:
   role_name: jolokia
-  namespace: bodsch
 
   author: Bodo Schulz
   description: install and configure jolokia as tomcat application
