@@ -108,4 +108,4 @@ jolokia_logrotate: {}
 
 [Apache](LICENSE)
 
-`FREE SOFTWARE, HELL YEAH!`
+**FREE SOFTWARE, HELL YEAH!**

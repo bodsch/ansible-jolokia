@@ -2,16 +2,9 @@
 name: CI
 
 on:
-  schedule:
-    - cron: "0 4 * * 0"
-  workflow_dispatch:
   workflow_run:
     workflows:
       - "code linter"
-    branches:
-      - main
-      - feature/**
-      - fix/**
     types:
       - completed
 
@@ -29,23 +22,29 @@ jobs:
       fail-fast: false
       matrix:
         image:
-          - debian:10
           - debian:11
+          - debian:12
           - ubuntu:20.04
+          - ubuntu:22.04
+        python_version:
+          - "3.10.11"
+          - "3.11.3"
         ansible-version:
-          - '5.1'
-          - '6.1'
+          - '6.7'
+        scenario:
+          - default
 
     steps:
       - name: check out the codebase.
         uses: actions/checkout@v3
         with:
           path: 'ansible-jolokia'
+          ref: ${{ github.event.workflow_run.head_branch }}
 
       - name: 🐍 set up python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: "${{ matrix.python_version }}"
 
       - name: install dependencies
         run: |
@@ -54,8 +53,11 @@ jobs:
 
       - name: test with tox
         run: |
-          tox -e ansible_$(printf "${{ matrix.ansible-version }}") \
-            -- molecule test --scenario-name default
+          make \
+            test \
+            -e TOX_SCENARIO="${{ matrix.scenario }}" \
+            -e TOX_ANSIBLE="ansible_${{ matrix.ansible-version }}" \
+            -e DISTRIBUTION="${{ matrix.image }}"
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
