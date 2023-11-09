@@ -61,3 +61,12 @@
   notify:
     - systemctl daemon-reload
     - restart jolokia
+
+- name: create custom fact file
+  bodsch.core.facts:
+    name: jolokia
+    facts:
+      version: "{{ jolokia_version }}"
+      tomcat_version: "{{ jolokia_tomcat_version }}"
+
+...

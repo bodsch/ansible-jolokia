@@ -30,9 +30,9 @@ then
           2) op='<' ;;
         esac
 
-        if [[ $op = "=" ]] || [[ $op = ">" ]]
+        # echo "FAIL: Expected '$3', Actual '$op', Arg1 '$1', Arg2 '$2'"
+        if [[ $op != "=" ]] || [[ $op = ">" ]]
         then
-          # echo "FAIL: Expected '$3', Actual '$op', Arg1 '$1', Arg2 '$2'"
           echo "re-install for version ${version}"
 
           remove_collection ${collection}

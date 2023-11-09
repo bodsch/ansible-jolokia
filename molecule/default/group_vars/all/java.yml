@@ -1,4 +1,10 @@
 ---
 
 java_packages:
-  - "{{ 'openjdk-11-jdk' if ansible_os_family == 'Debian' else 'java-11-openjdk' }}"
+  - "{% if (ansible_os_family == 'Debian' and ansible_distribution_major_version in ['11', '20']) %}
+      openjdk-11-jdk
+     {% elif (ansible_os_family == 'Debian' and ansible_distribution_major_version in ['12', '22']) %}
+       openjdk-17-jdk
+     {% else %}
+       java-11-openjdk
+     {% endif %}"

@@ -100,6 +100,13 @@ def get_vars(host):
     return result
 
 
+def local_facts(host):
+    """
+      return local facts
+    """
+    return host.ansible("setup").get("ansible_facts").get("ansible_local").get("jolokia")
+
+
 @pytest.mark.parametrize("dirs", [
     "/etc/ansible/facts.d",
     "/opt/jolokia/",
@@ -114,7 +121,9 @@ def test_jolokia(host, get_vars):
     """
       test installed jolokia version
     """
-    jolokia_version = get_vars.get("jolokia_version")
+    # jolokia_version = get_vars.get("jolokia_version")
+
+    jolokia_version = local_facts(host).get("version")
 
     jolokia_file = f"/opt/jolokia/current/webapps/jolokia/WEB-INF/lib/jolokia-core-{jolokia_version}.jar"
 
@@ -164,11 +173,14 @@ def test_open_port(host, ports):
 def test_request(host, get_vars):
     """
     """
-    jolokia_version = get_vars.get('jolokia_version')
+    jolokia_version = local_facts(host).get("version")
+    # jolokia_version = get_vars.get('jolokia_version')
     cmd = host.run("curl http://localhost:8080/jolokia")
 
-    if (cmd.succeeded):
+    if cmd.succeeded:
         j = json.loads(cmd.stdout)
+
+        print(j)
 
         version = j.get('value', {}).get('agent', '0')
         status = j.get('status')

@@ -20,13 +20,25 @@ Ansible role to install an jolokia application into an tomcat
 - python3
 - apache tomcat 9
 
+- Ansible Collections
+  - [bodsch.core](https://github.com/bodsch/ansible-collection-core)
+
+```bash
+ansible-galaxy collection install bodsch.core
+```
+or
+```bash
+ansible-galaxy collection install --requirements-file collections.yml
+```
+
+
 ### Operating systems
 
 Tested on
 
 * Debian based
-    - Debian 10 / 11
-    - Ubuntu 20.04
+    - Debian 10 / 11 / 12
+    - Ubuntu 20.04 / 22.04
 
 ## usage
 
