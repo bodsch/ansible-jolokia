@@ -13,6 +13,9 @@
         - name: update pacman system
           ansible.builtin.command: |
             pacman --refresh --sync --sysupgrade --noconfirm
+          register: pacman
+          changed_when: pacman.rc != 0
+          failed_when: pacman.rc != 0
 
         - name: create depends service
           ansible.builtin.copy:
@@ -24,7 +27,16 @@
           when:
             - ansible_os_family | lower == 'artix linux'
 
+    - name: make sure python3-apt is installed (only debian based)
+      ansible.builtin.package:
+        name:
+          - python3-apt
+        state: present
+      when:
+        - ansible_os_family | lower == 'debian'
+
     - name: update package cache
+      become: true
       ansible.builtin.package:
         update_cache: true
 
@@ -36,9 +48,39 @@
           - "ansible version      : {{ ansible_version.full }}"
           - "python version       : {{ ansible_python.version.major }}.{{ ansible_python.version.minor }}"
 
-- name: prepare container
+- name: prepare instance
   hosts: all
   gather_facts: true
 
+  pre_tasks:
+    - name: arch- / artixlinux
+      when:
+        - ansible_distribution | lower == 'archlinux' or
+          ansible_os_family | lower == 'artix linux'
+      block:
+        - name: make sure jdk17-openjdk is installed (only archlinux based)
+          ansible.builtin.package:
+            name:
+              - jdk17-openjdk
+              - groovy
   roles:
-    - role: java
+    - role: geerlingguy.java
+      when:
+        - ansible_distribution | lower in ['debian', 'ubuntu']
+        - ansible_distribution_major_version in ['11', '20']
+      java_packages:
+        - openjdk-11-jre-headless
+
+    - role: geerlingguy.java
+      when:
+        - ansible_distribution | lower in ['ubuntu']
+        - ansible_distribution_major_version in ['24']
+      java_packages:
+        - openjdk-17-jre-headless
+
+    - role: geerlingguy.java
+      when:
+        - not (ansible_distribution | lower == 'archlinux' or
+          ansible_os_family | lower == 'artix linux')
+        - ansible_distribution | lower in ['debian', 'ubuntu']
+        - ansible_distribution_major_version in ['12', '22']

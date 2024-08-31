@@ -1,5 +1,5 @@
 ---
 
-- name: java
+- name: geerlingguy.java
   src: geerlingguy.java
-  version: 2.3.2
+  version: 2.5.0
