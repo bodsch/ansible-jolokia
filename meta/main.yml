@@ -2,6 +2,7 @@
 
 galaxy_info:
   role_name: jolokia
+  namespace: bodsch
 
   author: Bodo Schulz
   description: install and configure jolokia as tomcat application
@@ -10,6 +11,7 @@ galaxy_info:
   min_ansible_version: "2.9"
 
   platforms:
+    - name: ArchLinux
     - name: Debian
       versions:
         # 10
